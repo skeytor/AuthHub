@@ -20,4 +20,12 @@
     <Using Include="Xunit" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Helpers\" />
+    <Folder Include="Fixtures\" />
+    <Folder Include="Systems\AuthHub.Api\Controllers\" />
+    <Folder Include="Systems\AuthHub.Domain\" />
+    <Folder Include="Systems\AuthHub.Persistence\" />
+  </ItemGroup>
+
 </Project>

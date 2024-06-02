@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuthHub.Api", "AuthHub.Api\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuthHub.Domain", "AuthHub.Domain\AuthHub.Domain.csproj", "{8FDCC356-9610-46C3-88CE-F90A7173EA1D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuthHub.Percistence", "AuthHub.Percistence\AuthHub.Percistence.csproj", "{A67996B3-D15F-4DDF-8E5A-0E5D8D7DD80F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuthHub.Persistence", "AuthHub.Percistence\AuthHub.Persistence.csproj", "{A67996B3-D15F-4DDF-8E5A-0E5D8D7DD80F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "unitests", "unitests", "{262FAFD7-EFF8-4C23-A8AE-E9CC43EFEBA6}"
 EndProject
