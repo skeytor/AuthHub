@@ -7,9 +7,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{B5B09454-587
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuthHub.Api", "AuthHub.Api\AuthHub.Api.csproj", "{79416585-44DA-4D05-A2C1-74FBDCF5E301}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthHub.Domain", "AuthHub.Domain\AuthHub.Domain.csproj", "{8FDCC356-9610-46C3-88CE-F90A7173EA1D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuthHub.Domain", "AuthHub.Domain\AuthHub.Domain.csproj", "{8FDCC356-9610-46C3-88CE-F90A7173EA1D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthHub.Percistence", "AuthHub.Percistence\AuthHub.Percistence.csproj", "{A67996B3-D15F-4DDF-8E5A-0E5D8D7DD80F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuthHub.Percistence", "AuthHub.Percistence\AuthHub.Percistence.csproj", "{A67996B3-D15F-4DDF-8E5A-0E5D8D7DD80F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "unitests", "unitests", "{262FAFD7-EFF8-4C23-A8AE-E9CC43EFEBA6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthHub.UnitTests", "AuthHub.UnitTests\AuthHub.UnitTests.csproj", "{250AF561-BF11-4D34-AD1E-BD46D4FB8B54}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,6 +33,10 @@ Global
 		{A67996B3-D15F-4DDF-8E5A-0E5D8D7DD80F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A67996B3-D15F-4DDF-8E5A-0E5D8D7DD80F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A67996B3-D15F-4DDF-8E5A-0E5D8D7DD80F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{250AF561-BF11-4D34-AD1E-BD46D4FB8B54}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{250AF561-BF11-4D34-AD1E-BD46D4FB8B54}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{250AF561-BF11-4D34-AD1E-BD46D4FB8B54}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{250AF561-BF11-4D34-AD1E-BD46D4FB8B54}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -37,6 +45,7 @@ Global
 		{79416585-44DA-4D05-A2C1-74FBDCF5E301} = {B5B09454-5875-455F-851E-89AAA7A96312}
 		{8FDCC356-9610-46C3-88CE-F90A7173EA1D} = {B5B09454-5875-455F-851E-89AAA7A96312}
 		{A67996B3-D15F-4DDF-8E5A-0E5D8D7DD80F} = {B5B09454-5875-455F-851E-89AAA7A96312}
+		{250AF561-BF11-4D34-AD1E-BD46D4FB8B54} = {262FAFD7-EFF8-4C23-A8AE-E9CC43EFEBA6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C3113522-0D25-4A56-88CA-9490F7BA2CC4}
