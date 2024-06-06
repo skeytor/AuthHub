@@ -1,6 +1,15 @@
 ﻿namespace AuthHub.Domain.Entities
 {
-    internal class User
+    /// <summary>
+    /// Represents the User Entity.
+    /// </summary>
+    public sealed class User
     {
+        public Guid Id { get; set; }
+        public string FirstName { get; set; } = string.Empty;
+        public string LastName { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+        public string Username { get; set; } = string.Empty;
     }
 }
