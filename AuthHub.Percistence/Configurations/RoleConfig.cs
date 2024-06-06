@@ -24,6 +24,10 @@ namespace AuthHub.Persistence.Configurations
                 .WithMany()
                 .UsingEntity<RolePermission>();
 
+            builder.HasMany(x => x.Users)
+                .WithOne(x => x.Role)
+                .HasForeignKey(x => x.RoleId);
+
             // Configure an index for name property, it must be unique
             builder.HasIndex(x => x.Name)
                 .IsUnique();

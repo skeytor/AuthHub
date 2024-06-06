@@ -33,8 +33,6 @@ namespace AuthHub.Persistence.Configurations
                 .HasDefaultValue(true);
 
             // Configure relationship
-            builder.HasOne(x => x.Role)
-                .WithMany(x => x.Users);
 
             // Configure an index for username and email properties. They such be uniques
             builder.HasIndex(x => x.Username)
