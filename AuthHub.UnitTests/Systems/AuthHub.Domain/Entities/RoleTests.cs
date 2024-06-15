@@ -4,7 +4,7 @@
     {
         // [ThingUnderTest]_Should_[ExpectedResult]_[Conditions]
         [Fact]
-        public void Create_Should_ReturnSuccess_WhenValueIsNotNull()
+        public void Add_Should_ReturnSuccess_WhenValueIsNotNull()
         {
             // Arrange
             
