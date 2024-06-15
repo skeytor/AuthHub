@@ -29,4 +29,8 @@
     <Folder Include="Systems\AuthHub.Persistence\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\AuthHub.Domain\AuthHub.Domain.csproj" />
+  </ItemGroup>
+
 </Project>
