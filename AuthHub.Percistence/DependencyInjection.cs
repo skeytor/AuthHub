@@ -1,6 +1,4 @@
-﻿using AuthHub.Domain.Repositories;
-using AuthHub.Persistence.Abstractions;
-using AuthHub.Persistence.Repositories;
+﻿using AuthHub.Persistence.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

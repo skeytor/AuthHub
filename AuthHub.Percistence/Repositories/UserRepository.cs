@@ -26,6 +26,7 @@ public sealed class UserRepository(IAppDbContext context)
         return await
             _Context
             .Users
+            .AsNoTracking()
             .ToListAsync();
     }
 
