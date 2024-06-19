@@ -32,8 +32,6 @@ namespace AuthHub.Persistence.Configurations
                 .IsRequired()
                 .HasDefaultValue(true);
 
-            // Configure relationship
-
             // Configure an index for username and email properties. They such be uniques
             builder.HasIndex(x => x.Username)
                 .IsUnique();
