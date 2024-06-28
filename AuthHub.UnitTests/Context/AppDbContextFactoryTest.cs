@@ -1,7 +1,7 @@
 ﻿using AuthHub.Persistence;
 using Microsoft.EntityFrameworkCore;
 
-namespace AuthHub.UnitTests.Helpers;
+namespace AuthHub.UnitTests.Context;
 
 public static class AppDbContextFactoryTest
 {

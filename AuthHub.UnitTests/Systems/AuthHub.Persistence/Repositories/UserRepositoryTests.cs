@@ -1,7 +1,8 @@
 ﻿using AuthHub.Domain.Entities;
 using AuthHub.Persistence;
 using AuthHub.Persistence.Repositories;
-using AuthHub.UnitTests.Helpers;
+using AuthHub.UnitTests.Context;
+using Microsoft.EntityFrameworkCore;
 
 namespace AuthHub.UnitTests.Systems.AuthHub.Persistence.Repositories;
 
@@ -12,9 +13,14 @@ public class UserRepositoryTests
     public async Task CreateAsync_Should_ReturnUserId_WhenValueIsNotNull()
     {
         // Arrange
-        var dbContext = AppDbContextFactoryTest.CreateDatabaseInMemory();
-        UserRepository userRepository = new(dbContext);
-        var user = new User()
+        AppDbContext context = AppDbContextFactoryTest.CreateSQLiteDatabaseInMemory();
+        UserRepository userRepository = new(context);
+        Role role = new()
+        {
+            Name = "Admin",
+            Description = "This is admin role"
+        };
+        User user = new()
         {
             FirstName = Faker.Name.First(),
             LastName = Faker.Name.Last(),
@@ -22,13 +28,15 @@ public class UserRepositoryTests
             Id = Guid.NewGuid(),
             IsActive = Faker.Boolean.Random(),
             Password = DateTime.Now.ToString(),
-            RoleId = Faker.RandomNumber.Next(0, 4),
+            Role = role,
             Username = Faker.Internet.UserName(),
         };
+        await context.Roles.AddAsync(role);
 
         // Act
         var userCreated = await userRepository.CreateAsync(user);
-        await dbContext.SaveChangesAsync();
+        await context.SaveChangesAsync();
+        
         // Assert
         Assert.NotNull(userCreated);
         Assert.IsType<User>(userCreated);
@@ -39,8 +47,14 @@ public class UserRepositoryTests
     public async Task CreateAsync_Should_ReturnException_WhenEmailExists()
     {
         // Arrange
-        var dbContext = AppDbContextFactoryTest.CreateDatabaseInMemory();
-        UserRepository userRepository = new(dbContext);
+        var context = AppDbContextFactoryTest.CreateSQLiteDatabaseInMemory();
+        UserRepository userRepository = new(context);
+        Role role = new()
+        {
+            Name = "Admin",
+            Description = "This is admin role"
+        };
+        await context.Roles.AddAsync(role);
         var testUser = new User()
         {
             FirstName = Faker.Name.First(),
@@ -49,12 +63,12 @@ public class UserRepositoryTests
             Id = Guid.NewGuid(),
             IsActive = Faker.Boolean.Random(),
             Password = DateTime.Now.ToString(),
-            RoleId = Faker.RandomNumber.Next(0, 4),
+            Role = role,
             Username = Faker.Internet.UserName(),
         };
 
-        await dbContext.AddAsync(testUser);
-        await dbContext.SaveChangesAsync();
+        await context.AddAsync(testUser);
+        await context.SaveChangesAsync();
 
         var user = new User()
         {
@@ -64,14 +78,13 @@ public class UserRepositoryTests
             Id = Guid.NewGuid(),
             IsActive = Faker.Boolean.Random(),
             Password = DateTime.Now.ToString(),
-            RoleId = Faker.RandomNumber.Next(0, 4),
+            Role = role,
             Username = Faker.Internet.UserName(),
         };
         // Act
         var result = await userRepository.CreateAsync(user);
-
         // Assert
-        await Assert.ThrowsAsync<Exception>(async () => await dbContext.SaveChangesAsync());
+        await Assert.ThrowsAsync<DbUpdateException>(async() => await context.SaveChangesAsync());
     }
 
     [Theory, ClassData(typeof(UserDataTest))]
@@ -80,8 +93,9 @@ public class UserRepositoryTests
         // Arrange
         using var _context = AppDbContextFactoryTest.CreateSQLiteDatabaseInMemory();
         UserRepository userRepository = new(_context);
-        await _context.Roles.AddRangeAsync(roles);
-        await _context.Users.AddRangeAsync(users);
+        var addRolesTask = _context.Roles.AddRangeAsync(roles);
+        var addUsersTask = _context.Users.AddRangeAsync(users);
+        await Task.WhenAll(addRolesTask, addUsersTask);
         await _context.SaveChangesAsync();
 
         // Act
@@ -96,7 +110,7 @@ public class UserRepositoryTests
     public async Task GetAllAsync_Should_ReturnEmpty_WhenUsersNotExists()
     {
         // Arrange
-        var dbContext = AppDbContextFactoryTest.CreateDatabaseInMemory();
+        var dbContext = AppDbContextFactoryTest.CreateSQLiteDatabaseInMemory();
         UserRepository userRepository = new(dbContext);
 
         // Act
@@ -150,25 +164,7 @@ public class UserDataTest : TheoryData<List<User>, List<Role>>
         (List<User> Users, List<Role> Roles) = GenerateFakeData(50, 2);
         Add(Users, Roles);
     }
-    private static List<User> GenerateUsers(int lenght)
-    {
-        List<User> data = [];
-        for (int i = 0; i < lenght; i++)
-        {
-            data.Add(new()
-            {
-                FirstName = Faker.Name.First(),
-                LastName = Faker.Name.Last(),
-                Email = Faker.Internet.Email(),
-                Id = Guid.NewGuid(),
-                IsActive = Faker.Boolean.Random(),
-                Password = DateTime.Now.ToString(),
-                RoleId = Faker.RandomNumber.Next(0, 4),
-                Username = Faker.Internet.UserName(),
-            });
-        }
-        return data;
-    }
+
     private static (List<User> Users, List<Role> Roles) GenerateFakeData(int nroUsers, int nroRoles)
     {
         List<User> users = [];

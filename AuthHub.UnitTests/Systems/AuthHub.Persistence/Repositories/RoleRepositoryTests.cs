@@ -1,7 +1,7 @@
 ﻿using AuthHub.Domain.Entities;
 using AuthHub.Persistence;
 using AuthHub.Persistence.Repositories;
-using AuthHub.UnitTests.Helpers;
+using AuthHub.UnitTests.Context;
 
 namespace AuthHub.UnitTests.Systems.AuthHub.Persistence.Repositories;
 
