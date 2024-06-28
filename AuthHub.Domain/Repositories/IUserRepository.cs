@@ -7,5 +7,5 @@ public interface IUserRepository
     Task<User?> GetByIdAsync(Guid id);
     Task DeleteAsync(Guid id);
     Task<User> UpdateAsync(Guid id, User user);
-    Task<List<User>> GetAllAsync();
+    Task<IReadOnlyCollection<User>> GetAllAsync();
 }

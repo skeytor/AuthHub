@@ -21,10 +21,9 @@ public sealed class UserRepository(IAppDbContext context)
         throw new NotImplementedException();
     }
 
-    public async Task<List<User>> GetAllAsync()
+    public async Task<IReadOnlyCollection<User>> GetAllAsync()
     {
-        return await
-            _Context
+        return await _Context
             .Users
             .AsNoTracking()
             .ToListAsync();

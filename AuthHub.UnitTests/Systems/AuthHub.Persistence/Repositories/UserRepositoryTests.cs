@@ -1,8 +1,10 @@
 ﻿using AuthHub.Domain.Entities;
+using AuthHub.Persistence;
 using AuthHub.Persistence.Repositories;
 using AuthHub.UnitTests.Helpers;
 
 namespace AuthHub.UnitTests.Systems.AuthHub.Persistence.Repositories;
+
 public class UserRepositoryTests
 {
 
@@ -10,7 +12,7 @@ public class UserRepositoryTests
     public async Task CreateAsync_Should_ReturnUserId_WhenValueIsNotNull()
     {
         // Arrange
-        var dbContext = AppDbContextGeneratorTest.Generate();
+        var dbContext = AppDbContextFactoryTest.CreateDatabaseInMemory();
         UserRepository userRepository = new(dbContext);
         var user = new User()
         {
@@ -37,7 +39,7 @@ public class UserRepositoryTests
     public async Task CreateAsync_Should_ReturnException_WhenEmailExists()
     {
         // Arrange
-        var dbContext = AppDbContextGeneratorTest.Generate();
+        var dbContext = AppDbContextFactoryTest.CreateDatabaseInMemory();
         UserRepository userRepository = new(dbContext);
         var testUser = new User()
         {
@@ -73,13 +75,14 @@ public class UserRepositoryTests
     }
 
     [Theory, ClassData(typeof(UserDataTest))]
-    public async Task GetAllAsync_Should_ReturnAllUsers_WhenUsersExists(List<User> users)
+    public async Task GetAllAsync_Should_ReturnAllUsers_WhenUsersExists(List<User> users, List<Role> roles)
     {
         // Arrange
-        var dbContext = AppDbContextGeneratorTest.Generate();
-        UserRepository userRepository = new(dbContext);
-        await dbContext.Users.AddRangeAsync(users);
-        await dbContext.SaveChangesAsync();
+        using var _context = AppDbContextFactoryTest.CreateSQLiteDatabaseInMemory();
+        UserRepository userRepository = new(_context);
+        await _context.Roles.AddRangeAsync(roles);
+        await _context.Users.AddRangeAsync(users);
+        await _context.SaveChangesAsync();
 
         // Act
         var result = await userRepository.GetAllAsync();
@@ -93,7 +96,7 @@ public class UserRepositoryTests
     public async Task GetAllAsync_Should_ReturnEmpty_WhenUsersNotExists()
     {
         // Arrange
-        var dbContext = AppDbContextGeneratorTest.Generate();
+        var dbContext = AppDbContextFactoryTest.CreateDatabaseInMemory();
         UserRepository userRepository = new(dbContext);
 
         // Act
@@ -107,7 +110,7 @@ public class UserRepositoryTests
     public async Task GetByIdAsync_Should_ReturnUser_WhenUserExists(List<User> users)
     {
         // Arrange
-        var dbContext = AppDbContextGeneratorTest.Generate();
+        var dbContext = AppDbContextFactoryTest.CreateDatabaseInMemory();
         UserRepository userRepository = new(dbContext);
         Random rand = new();
         int number = rand.Next(0, users.Count);
@@ -127,7 +130,7 @@ public class UserRepositoryTests
     public async Task GetByIdAsync_Should_ReturnNull_WhenUserNotExists(List<User> users)
     {
         // Arrange
-        var dbContext = AppDbContextGeneratorTest.Generate();
+        var dbContext = AppDbContextFactoryTest.CreateDatabaseInMemory();
         UserRepository userRepository = new(dbContext);
         await dbContext.Users.AddRangeAsync(users);
         await dbContext.SaveChangesAsync();
@@ -140,13 +143,14 @@ public class UserRepositoryTests
     }
 }
 
-public class UserDataTest : TheoryData<List<User>>
+public class UserDataTest : TheoryData<List<User>, List<Role>>
 {
     public UserDataTest()
     {
-        Add(GenerateData(100));
+        (List<User> Users, List<Role> Roles) = GenerateFakeData(50, 2);
+        Add(Users, Roles);
     }
-    private static List<User> GenerateData(int lenght)
+    private static List<User> GenerateUsers(int lenght)
     {
         List<User> data = [];
         for (int i = 0; i < lenght; i++)
@@ -164,5 +168,33 @@ public class UserDataTest : TheoryData<List<User>>
             });
         }
         return data;
+    }
+    private static (List<User> Users, List<Role> Roles) GenerateFakeData(int nroUsers, int nroRoles)
+    {
+        List<User> users = [];
+        List<Role> roles = [];
+        for (int i = 0; i < nroRoles; i++)
+        {
+            roles.Add(new()
+            {
+                Name = "Admin" + i,
+                Description = Faker.Lorem.Sentence(1)
+            });
+        }
+        for (int i = 0; i < nroUsers; i++)
+        {
+            users.Add(new()
+            {
+                FirstName = Faker.Name.First(),
+                LastName = Faker.Name.Last(),
+                Email = Faker.Internet.Email(),
+                Id = Guid.NewGuid(),
+                IsActive = Faker.Boolean.Random(),
+                Password = DateTime.Now.ToString(),
+                RoleId = Faker.RandomNumber.Next(1, roles.Count),
+                Username = Faker.Internet.UserName(),
+            });
+        }
+        return (users, roles);
     }
 }
