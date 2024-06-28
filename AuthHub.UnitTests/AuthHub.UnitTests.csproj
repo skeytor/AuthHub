@@ -27,10 +27,10 @@
 
   <ItemGroup>
     <Folder Include="Fixtures\" />
-    <Folder Include="Systems\AuthHub.Api\Controllers\" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AuthHub.Api\AuthHub.Api.csproj" />
     <ProjectReference Include="..\AuthHub.Domain\AuthHub.Domain.csproj" />
     <ProjectReference Include="..\AuthHub.Percistence\AuthHub.Persistence.csproj" />
   </ItemGroup>

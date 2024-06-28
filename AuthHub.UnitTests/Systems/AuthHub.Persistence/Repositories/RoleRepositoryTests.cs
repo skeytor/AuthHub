@@ -1,4 +1,5 @@
 ﻿using AuthHub.Domain.Entities;
+using AuthHub.Persistence;
 using AuthHub.Persistence.Repositories;
 using AuthHub.UnitTests.Helpers;
 
@@ -10,11 +11,12 @@ public class RoleRepositoryTests
     public async Task GetAllAsync_Should_ReturnAllRoles_WhenRolesExists(List<Role> roles)
     {
         // Arrange
-        var dbContext = AppDbContextGeneratorTest.Generate();
-        RoleRepository roleRepository = new(dbContext);
-        await dbContext.Roles.AddRangeAsync(roles);
-        await dbContext.SaveChangesAsync();
-        
+        using AppDbContext _context = AppDbContextFactoryTest
+            .CreateSQLiteDatabaseInMemory();
+        RoleRepository roleRepository = new(_context);
+        await _context.Roles.AddRangeAsync(roles);
+        await _context.SaveChangesAsync();
+
         // Act
         var result = await roleRepository.GetAllAsync();
 
@@ -38,9 +40,8 @@ public class RoleDataTest : TheoryData<List<Role>>
         {
             data.Add(new()
             {
-                Id = i + ,
-                Description = Faker.Lorem.Sentence(6),
-                Name = Faker.Lorem.Sentence(1),
+                Name = Faker.Name.First(),
+                Description = Faker.Lorem.Sentence(3)
             });
         }
         return data;
