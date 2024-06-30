@@ -3,12 +3,12 @@ using AuthHub.Api.Services.UserService;
 using AuthHub.Domain.Repositories;
 using Moq;
 
-namespace AuthHub.UnitTests.Systems.AuthHub.Api.Services;
+namespace Api.UnitTest.Services;
 
-public class UserServiceTests
+public class UserServiceTest
 {
     [Fact]
-    public async Task GetAllUsers_Should_ReturnUserList_WhenInvokeUserRepository()
+    public async Task GetAllAsync_Should_ReturnUserEntityList_WhenInvokeUserRepository()
     {
         // Arrange
         var mockUserRepository = new Mock<IUserRepository>();

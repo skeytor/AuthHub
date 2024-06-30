@@ -11,10 +11,6 @@ public sealed class UserController(IUserService userService) : ControllerBase
     public async Task<IActionResult> GetAll()
     {
         var result = await userService.GetAllUsers();
-        if (result.Count != 0)
-        {
-            return Ok(result);
-        }
-        return NotFound();
+        return Ok(result);
     }
 }
