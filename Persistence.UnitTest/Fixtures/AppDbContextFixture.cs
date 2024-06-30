@@ -1,25 +1,19 @@
 ﻿using AuthHub.Persistence;
+using AuthHub.Persistence.Abstractions;
 using Microsoft.EntityFrameworkCore;
+using Persistence.UnitTest.Context;
 
-namespace AuthHub.UnitTests.Helpers;
+namespace Persistence.UnitTest.Fixtures;
 
-public static class AppDbContextFactoryTest
+public class AppDbContextFixture
 {
-    public static AppDbContext CreateDatabaseInMemory()
+    public readonly IAppDbContext context;
+    public readonly IUnitOfWork unitOfWork;
+
+    public AppDbContextFixture()
     {
-        DbContextOptionsBuilder<AppDbContext> optionsBuilder = new DbContextOptionsBuilder<AppDbContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString());
-        return new AppDbContext(optionsBuilder.Options);
-    }
-    public static AppDbContext CreateSQLiteDatabaseInMemory()
-    {
-        DbContextOptions<AppDbContext> options = new DbContextOptionsBuilder<AppDbContext>()
-            .UseSqlite("DataSource=:memory:")
-            .Options;
-        AppDbContext context = new(options);
-        context.Database.OpenConnection();
-        context.Database.EnsureCreated();
-        return context;
+        context = ContextFactory.CreateSQLiteDatabaseInMemory();
+        unitOfWork = (IUnitOfWork)context;
     }
 }
 /*
@@ -40,11 +34,10 @@ public class AppDbContextFixture : IDisposable
         context.Database.EnsureCreated();
         return context;
     }
-
-
     public void Dispose()
     {
         Context.Database.CloseConnection();
         Context.Dispose();
     }
-}*/
+}
+*/

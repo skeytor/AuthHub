@@ -6,7 +6,7 @@ using System.Reflection;
 namespace AuthHub.Persistence;
 
 public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
-    : DbContext(options), IAppDbContext
+    : DbContext(options), IAppDbContext, IUnitOfWork
 {
     public DbSet<User> Users { get; set; }
 
@@ -19,5 +19,9 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
     {
         base.OnModelCreating(modelBuilder);
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+    }
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        return base.SaveChangesAsync(cancellationToken);
     }
 }
