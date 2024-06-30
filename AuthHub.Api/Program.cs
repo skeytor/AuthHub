@@ -1,3 +1,4 @@
+using AuthHub.Api.Services.UserService;
 using AuthHub.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,7 +12,7 @@ builder.Services.AddSwaggerGen();
 
 // Persistence layer
 builder.Services.AddDataAccess(builder.Configuration);
-
+builder.Services.AddScoped<IUserService, UserService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
