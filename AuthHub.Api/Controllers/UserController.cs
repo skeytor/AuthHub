@@ -1,4 +1,5 @@
-﻿using AuthHub.Api.Services.UserService;
+﻿using AuthHub.Api.Dtos;
+using AuthHub.Api.Services.UserService;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AuthHub.Api.Controllers;
@@ -12,5 +13,16 @@ public sealed class UserController(IUserService userService) : ControllerBase
     {
         var result = await userService.GetAllUsers();
         return Ok(result);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Create([FromBody] UserRequest request)
+    {
+        if (!ModelState.IsValid) 
+        {
+            return BadRequest(ModelState);
+        }
+        var result = await userService.Create(request);
+        return Created("", result);
     }
 }

@@ -48,24 +48,30 @@ public class UserControllerTest
         Assert.NotEmpty(data);
     }
 
+
     [Fact]
-    public async Task GetAll_Should_ReturnEmptyUserResponseList_WhenInvokeUserService()
+    public async Task Create_Should_Return2001StatusCode_WhenInvokeUserService()
     {
         // Arrange
+        var request = new UserRequest("Rober Leon", "Guerrero Mendoza", "rleon", "example@email.com", "Pass123", 1);
         var mockUserService = new Mock<IUserService>();
         mockUserService
-            .Setup(service => service.GetAllUsers())
-            .ReturnsAsync([]);
-        UserController sut = new(mockUserService.Object);
+            .Setup(service => service.Create(request))
+            .ReturnsAsync(Guid.NewGuid())
+            .Verifiable(Times.Once());
 
+        UserController sut = new(mockUserService.Object);
+        
         // Act
-        var result = (OkObjectResult)await sut.GetAll();
+        var result = await sut.Create(request);
 
         // Assert
-        var data = (IReadOnlyCollection<UserResponse>)result.Value!;
-        mockUserService
-            .Verify(service => service.GetAllUsers(), Times.Once());
-        Assert.Empty(data);
+        Assert.IsType<CreatedResult>(result);
+        mockUserService.Verify();
+        var response = (CreatedResult)result;
+        Assert.Equal(201, response.StatusCode);
+        Assert.True(response.Value is Guid);
+        Assert.NotEqual(Guid.Empty, response.Value);
     }
 }
 public class UserResponseTestData : TheoryData<List<UserResponse>>
