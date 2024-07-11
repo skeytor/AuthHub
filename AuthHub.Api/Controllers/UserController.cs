@@ -12,17 +12,21 @@ public sealed class UserController(IUserService userService) : ControllerBase
     public async Task<IActionResult> GetAll()
     {
         var result = await userService.GetAllUsers();
-        return Ok(result);
+        return result.IsSuccess
+            ? Ok(result.Value)
+            : BadRequest();
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] UserRequest request)
+    public async Task<IActionResult> Create([FromBody] CreateUserRequest request)
     {
-        if (!ModelState.IsValid) 
+        if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
         }
         var result = await userService.Create(request);
-        return Created("", result);
+        return result.IsSuccess
+            ? CreatedAtAction(nameof(Create), result.Value)
+            : BadRequest();
     }
 }

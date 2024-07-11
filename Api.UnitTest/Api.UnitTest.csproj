@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AuthHub.Api\AuthHub.Api.csproj" />
+    <ProjectReference Include="..\Persistence.UnitTest\Persistence.UnitTest.csproj" />
   </ItemGroup>
 
 </Project>

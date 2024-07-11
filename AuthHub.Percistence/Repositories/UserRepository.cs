@@ -21,6 +21,11 @@ public sealed class UserRepository(IAppDbContext context)
         throw new NotImplementedException();
     }
 
+    public Task<bool> ExistAsync(string email)
+    {
+        throw new NotImplementedException();
+    }
+
     public async Task<IReadOnlyCollection<User>> GetAllAsync()
     {
         return await _Context
@@ -35,6 +40,14 @@ public sealed class UserRepository(IAppDbContext context)
             _Context
             .Users
             .FindAsync(id);
+    }
+
+    public async Task<User?> GetByUserNameAsync(string userName)
+    {
+        return await
+            _Context
+            .Users
+            .FindAsync(userName);
     }
 
     public Task<User> UpdateAsync(Guid id, User user)

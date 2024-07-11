@@ -1,13 +1,20 @@
 ﻿using AuthHub.Api.Dtos;
 using AuthHub.Domain.Entities;
 using AuthHub.Domain.Repositories;
+using AuthHub.Domain.Results;
 
 namespace AuthHub.Api.Services.UserService;
 
 public sealed class UserService(IUserRepository userRepository) : IUserService
 {
-    public async Task<Guid> Create(UserRequest request)
+    public async Task<Result<Guid>> Create(CreateUserRequest request)
     {
+        bool checkUser = await userRepository.ExistAsync(request.Email);
+        if (checkUser)
+        {
+            return Result
+                .Failure<Guid>(Error.Conflict("User.AlreadyEmail", $"Email { request.Email } is already"));
+        }
         User user = new()
         {
             FirstName = request.FirstName,
@@ -21,13 +28,13 @@ public sealed class UserService(IUserRepository userRepository) : IUserService
         return userCreated.Id;
     }
 
-    public async Task<IReadOnlyCollection<UserResponse>> GetAllUsers()
+    public async Task<Result<IReadOnlyCollection<UserResponse>>> GetAllUsers()
     {
         var users = await userRepository.GetAllAsync();
         IReadOnlyCollection<UserResponse> result = users
             .Select(user => new UserResponse(user.Id, user.FirstName, user.LastName, user.Email))
             .ToList()
             .AsReadOnly();
-        return result;
+        return Result.Success(result);
     }
 }

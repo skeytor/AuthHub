@@ -8,4 +8,6 @@ public interface IUserRepository
     Task DeleteAsync(Guid id);
     Task<User> UpdateAsync(Guid id, User user);
     Task<IReadOnlyCollection<User>> GetAllAsync();
+    Task<User?> GetByUserNameAsync(string userName);
+    Task<bool> ExistAsync(string email);
 }

@@ -2,6 +2,7 @@
 using AuthHub.Api.Services.UserService;
 using AuthHub.Domain.Entities;
 using AuthHub.Domain.Repositories;
+using AuthHub.Domain.Results;
 using FluentAssertions;
 using Moq;
 
@@ -9,53 +10,124 @@ namespace Api.UnitTest.Services;
 
 public class UserServiceTest
 {
-    [Fact]
-    public async Task GetAllAsync_Should_ReturnUserEntityList_WhenInvokeUserRepository()
+    [Theory, ClassData(typeof(SetupUserServiceValidTestData))]
+    public async Task GetAllAsync_Should_ReturnUserList_WhenUsersExist(IReadOnlyCollection<User> expected)
     {
         // Arrange
         var mockUserRepository = new Mock<IUserRepository>();
         mockUserRepository
             .Setup(repository => repository.GetAllAsync())
-            .ReturnsAsync([]);
-        var sut = new UserService(mockUserRepository.Object);
+            .ReturnsAsync(expected)
+            .Verifiable(Times.Once());
+        UserService userService = new(mockUserRepository.Object);
 
         // Act
-        var result = await sut.GetAllUsers();
+        var result = await userService.GetAllUsers();
 
         // Assert
-        Assert.IsAssignableFrom<IReadOnlyCollection<UserResponse>>(result);
-        mockUserRepository.Verify(repository => repository.GetAllAsync(), Times.Once());
+        mockUserRepository.Verify();
+        result
+            .IsSuccess
+            .Should()
+            .BeTrue();
+        result
+            .Value
+            .Should()
+            .BeAssignableTo<IReadOnlyCollection<UserResponse>>();    
+        result
+            .Value
+            .Should()
+            .NotBeEmpty()
+            .And
+            .HaveSameCount(expected);
     }
 
     [Fact]
-    public async Task CreateAsync_Should_ReturnId_WhenInvokeCreateUserRepositoryMethod()
+    public async Task CreateAsync_Should_ReturnId_WhenUserDoesNotExist()
     {
         // Arrange
-        UserRequest userRequest = new("Pepito", "Leon", "rleon", "example@email.com", "Pass123", 1);
-        User expectedUser = new()
+        CreateUserRequest request = new("Pepito", "Leon", "rleon", "example@email.com", "Pass123", RoleId: 1);
+        User expected = new()
         {
             Id = Guid.NewGuid(),
-            FirstName = userRequest.FirstName,
-            LastName = userRequest.LastName,
-            Username = userRequest.UserName,
-            Email = userRequest.Email,
-            Password = userRequest.Password,
-            RoleId = userRequest.RoleId,
+            FirstName = request.FirstName,
+            LastName = request.LastName,
+            Username = request.UserName,
+            Email = request.Email,
+            Password = request.Password,
+            RoleId = request.RoleId,
             IsActive = true
         };
         Mock<IUserRepository> mockUserRepository = new();
         mockUserRepository
-            .Setup(repo => repo.CreateAsync(It.IsAny<User>()))
-            .ReturnsAsync(expectedUser)
+            .Setup(repo => repo.ExistAsync(It.IsAny<string>()))
+            .ReturnsAsync(false)
             .Verifiable(Times.Once());
-        UserService sut = new(mockUserRepository.Object);
+        mockUserRepository
+            .Setup(repo => repo.CreateAsync(It.IsAny<User>()))
+            .ReturnsAsync(expected)
+            .Verifiable(Times.Once());
+
+        UserService userService = new(mockUserRepository.Object);
 
         // Act
-        var result = await sut.Create(userRequest);
-        
+        var result = await userService.Create(request);
+
         // Assert
         mockUserRepository.Verify();
-        result.Should().NotBe(Guid.Empty); // Assertions with FluentAssertions
-        result.Should().Be(expectedUser.Id);
+        result
+            .IsSuccess
+            .Should()
+            .BeTrue();
+        result
+            .Error
+            .Should()
+            .Be(Error.None);
+        result
+            .Value
+            .Should()
+            .NotBeEmpty()
+            .And
+            .Be(expected.Id);
+    }
+
+    [Fact]
+    public async Task CreateAsync_Should_ReturnErrorFailure_WhenUserExists()
+    {
+        // Arrange
+        CreateUserRequest request = new("Pepito", "Leon", "rleon", "example@email.com", "Pass123", RoleId: 1);
+        User expected = new()
+        {
+            Id = Guid.NewGuid(),
+            FirstName = request.FirstName,
+            LastName = request.LastName,
+            Username = request.UserName,
+            Email = request.Email,
+            Password = request.Password,
+            RoleId = request.RoleId,
+            IsActive = true
+        };
+        Mock<IUserRepository> mockUserRepository = new();
+        mockUserRepository
+            .Setup(repo => repo.ExistAsync(It.IsAny<string>()))
+            .ReturnsAsync(true)
+            .Verifiable(Times.Once());
+
+        UserService userService = new(mockUserRepository.Object);
+
+        // Act
+        var result = await userService.Create(request);
+
+        // Assert
+        mockUserRepository.Verify();
+        result
+            .IsFailure
+            .Should()
+            .BeTrue();
+        result
+            .Error
+            .Type
+            .Should()
+            .Be(ErrorType.Conflict);
     }
 }

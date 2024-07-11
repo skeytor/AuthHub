@@ -2,7 +2,7 @@
 
 namespace AuthHub.Api.Dtos;
 
-public sealed record UserRequest(
+public sealed record CreateUserRequest(
     [Required, StringLength(maximumLength:50)]
     string FirstName,
 
@@ -18,6 +18,6 @@ public sealed record UserRequest(
     [Required, MinLength(5), DataType(DataType.Password)]
     string Password,
 
-    [Required]
+    [Required, Range(1, int.MaxValue)]
     int RoleId
     );
