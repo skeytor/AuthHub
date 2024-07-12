@@ -13,7 +13,7 @@ public class UserRespositoryTest(AppDbContextFixture fixture)
     private readonly IUnitOfWork _unitOfWork = fixture.unitOfWork;
 
     [Fact]
-    public async Task CreateAsync_Should_ReturnUserId_WhenValueIsNotNull()
+    public async Task CreateAsync_Should_ReturnUserEntity_When()
     {
         // Arrange
         Role role = new()

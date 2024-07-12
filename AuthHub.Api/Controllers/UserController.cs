@@ -20,10 +20,6 @@ public sealed class UserController(IUserService userService) : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateUserRequest request)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
         var result = await userService.Create(request);
         return result.IsSuccess
             ? CreatedAtAction(nameof(Create), result.Value)

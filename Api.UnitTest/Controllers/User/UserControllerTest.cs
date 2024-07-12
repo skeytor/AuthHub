@@ -11,7 +11,7 @@ namespace Api.UnitTest.Controllers.User;
 public class UserControllerTest
 {
 
-    [Theory, ClassData(typeof(UserResponseTestValidData))]
+    [Theory, ClassData(typeof(SetupUserControllerValidTestData))]
     public async Task GetAll_Should_ReturnUserResponseList_WhenUsersExist(List<UserResponse> fakeUsers)
     {
         // Arrange
@@ -30,12 +30,21 @@ public class UserControllerTest
         sutActionResult.Should().BeOfType<OkObjectResult>();
 
         OkObjectResult okObjectResult = (OkObjectResult)sutActionResult;
-        okObjectResult.StatusCode.Should().Be(StatusCodes.Status200OK);
-        okObjectResult.Value.Should().BeAssignableTo<IReadOnlyCollection<UserResponse>>();
+        okObjectResult
+            .StatusCode
+            .Should()
+            .Be(StatusCodes.Status200OK);
+        okObjectResult
+            .Value
+            .Should()
+            .BeAssignableTo<IReadOnlyCollection<UserResponse>>();
 
         var dataResponse = (IReadOnlyCollection<UserResponse>)okObjectResult.Value!;
-        dataResponse.Should().NotBeEmpty();
-        dataResponse.Should().HaveSameCount(fakeUsers);
+        dataResponse
+            .Should()
+            .NotBeEmpty()
+            .And
+            .HaveSameCount(fakeUsers);
     }
 
 
@@ -64,13 +73,23 @@ public class UserControllerTest
 
         // Assert
         mockUserService.Verify();
-        sutActionResult.Should().BeOfType<CreatedAtActionResult>();
+        sutActionResult
+            .Should()
+            .BeOfType<CreatedAtActionResult>();
 
         CreatedAtActionResult createdResult = (CreatedAtActionResult)sutActionResult;
-        createdResult.StatusCode.Should().Be(StatusCodes.Status201Created);
-        createdResult.Value.Should().BeOfType<Guid>();
+        createdResult
+            .StatusCode
+            .Should()
+            .Be(StatusCodes.Status201Created);
+        createdResult
+            .Value
+            .Should()
+            .BeOfType<Guid>();
 
         Guid userId = (Guid)createdResult.Value!;
-        userId.Should().NotBeEmpty();
+        userId
+            .Should()
+            .NotBeEmpty();
     }
 }

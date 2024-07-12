@@ -16,11 +16,6 @@ public sealed class UserRepository(IAppDbContext context)
         return userCreated.Entity;
     }
 
-    public Task DeleteAsync(Guid id)
-    {
-        throw new NotImplementedException();
-    }
-
     public Task<bool> ExistAsync(string email)
     {
         throw new NotImplementedException();
@@ -48,10 +43,5 @@ public sealed class UserRepository(IAppDbContext context)
             _Context
             .Users
             .FindAsync(userName);
-    }
-
-    public Task<User> UpdateAsync(Guid id, User user)
-    {
-        throw new NotImplementedException();
     }
 }
