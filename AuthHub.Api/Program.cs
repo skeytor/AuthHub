@@ -11,7 +11,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Persistence layer
-builder.Services.AddDataAccess(builder.Configuration);
+builder.Services.AddRepositories(builder.Configuration);
 builder.Services.AddScoped<IUserService, UserService>();
 var app = builder.Build();
 
