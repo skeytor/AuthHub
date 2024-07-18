@@ -1,9 +1,10 @@
-﻿using AuthHub.Domain.Entities;
+﻿using AuthHub.Api.Dtos;
+using AuthHub.Domain.Entities;
 using Bogus;
 
-namespace Persistence.UnitTest.Data;
+namespace Api.UnitTest.Setup;
 
-public static class DataGenerator
+internal static class TestData
 {
     public static List<User> GenerateFakeUsers(int count)
     {
@@ -22,5 +23,14 @@ public static class DataGenerator
             .RuleFor(r => r.Name, f => f.Name.JobTitle())
             .RuleFor(r => r.Description, f => f.Name.JobDescriptor());
         return roleFaker.Generate(count);
+    }
+    public static List<UserResponse> GenerateFakeUsersResponse(int count) 
+    {
+        Faker<UserResponse> userResponse = new Faker<UserResponse>()
+            .RuleFor(u => u.Id, _ => Guid.NewGuid())
+            .RuleFor(u => u.Name, f => f.Name.FirstName())
+            .RuleFor(u => u.Email, f => f.Internet.Email())
+            .RuleFor(u => u.LastName, f => f.Name.LastName());
+        return userResponse.Generate(count);
     }
 }
