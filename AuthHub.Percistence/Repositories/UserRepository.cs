@@ -18,7 +18,9 @@ public sealed class UserRepository(IAppDbContext context)
 
     public Task<bool> ExistAsync(string email)
     {
-        throw new NotImplementedException();
+        return _Context
+            .Users
+            .AnyAsync(u => u.Email == email);
     }
 
     public async Task<IReadOnlyCollection<User>> GetAllAsync()

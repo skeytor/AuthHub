@@ -2,10 +2,13 @@
 using AuthHub.Domain.Entities;
 using AuthHub.Domain.Repositories;
 using AuthHub.Domain.Results;
+using AuthHub.Persistence.Abstractions;
 
 namespace AuthHub.Api.Services.UserService;
 
-public sealed class UserService(IUserRepository userRepository) : IUserService
+public sealed class UserService(
+    IUserRepository userRepository,
+    IUnitOfWork unitOfWork) : IUserService
 {
     public async Task<Result<Guid>> Create(CreateUserRequest request)
     {
@@ -25,6 +28,7 @@ public sealed class UserService(IUserRepository userRepository) : IUserService
             RoleId = request.RoleId
         };
         User userCreated = await userRepository.CreateAsync(user);
+        await unitOfWork.SaveChangesAsync();
         return userCreated.Id;
     }
 

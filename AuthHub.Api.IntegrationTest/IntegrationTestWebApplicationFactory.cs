@@ -1,4 +1,5 @@
 ﻿using AuthHub.Persistence;
+using AuthHub.Persistence.Abstractions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -6,13 +7,15 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Hosting;
 
 namespace AuthHub.Api.IntegrationTest;
 
 // Program.cs is default internal
-internal class IntegrationTestWebApplicationFactory : WebApplicationFactory<Program>
+///
+public class IntegrationTestWebApplicationFactory<TProgram> 
+    : WebApplicationFactory<TProgram> where TProgram : class
 {
+    public IAppDbContext? Context { get; private set; }
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.ConfigureTestServices(services =>
@@ -22,13 +25,13 @@ internal class IntegrationTestWebApplicationFactory : WebApplicationFactory<Prog
             services.AddSqlServer<AppDbContext>(connString);
             var dbContext = CreateDbContext(services);
             dbContext.Database.EnsureDeleted();
-            dbContext.Database.Migrate();
+            Context = dbContext;
         });
     }
     private static string? GetConnectionString()
     {
         var configuration = new ConfigurationBuilder()
-            .AddUserSecrets<IntegrationTestWebApplicationFactory>()
+            .AddUserSecrets<IntegrationTestWebApplicationFactory<TProgram>>()
             .Build();
         string? connString = configuration.GetConnectionString("AuthHub");
         return connString;
@@ -36,7 +39,7 @@ internal class IntegrationTestWebApplicationFactory : WebApplicationFactory<Prog
     private static AppDbContext CreateDbContext(IServiceCollection services)
     {
         ServiceProvider serviceProvider = services.BuildServiceProvider();
-        var scope = serviceProvider.CreateScope();
+        IServiceScope scope = serviceProvider.CreateScope();
         AppDbContext dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         return dbContext;
     }

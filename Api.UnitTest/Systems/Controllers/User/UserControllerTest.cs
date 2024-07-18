@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 
-namespace Api.UnitTest.Controllers.User;
+namespace Api.UnitTest.Systems.Controllers.User;
 
 public class UserControllerTest
 {
@@ -27,7 +27,9 @@ public class UserControllerTest
 
         // Assert
         mockUserService.Verify();
-        sutActionResult.Should().BeOfType<OkObjectResult>();
+        sutActionResult
+            .Should()
+            .BeOfType<OkObjectResult>();
 
         OkObjectResult okObjectResult = (OkObjectResult)sutActionResult;
         okObjectResult
@@ -53,11 +55,11 @@ public class UserControllerTest
     {
         // Arrange
         CreateUserRequest request = new(
-            "Rober Leon",
-            "Guerrero Mendoza",
-            "rleon",
+            "First Name",
+            "Last Name",
+            "user_name",
             "example@email.com",
-            "Pass123",
+            "P@ssword123",
             1
         );
         var mockUserService = new Mock<IUserService>();
