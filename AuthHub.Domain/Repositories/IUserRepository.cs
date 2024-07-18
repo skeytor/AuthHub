@@ -5,7 +5,7 @@ public interface IUserRepository
 {
     Task<User> CreateAsync(User user);
     Task<User?> GetByIdAsync(Guid id);
-    Task DeleteAsync(Guid id);
-    Task<User> UpdateAsync(Guid id, User user);
     Task<IReadOnlyCollection<User>> GetAllAsync();
+    Task<User?> GetByUserNameAsync(string userName);
+    Task<bool> ExistAsync(string email);
 }

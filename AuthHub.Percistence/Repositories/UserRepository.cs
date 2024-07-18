@@ -16,9 +16,11 @@ public sealed class UserRepository(IAppDbContext context)
         return userCreated.Entity;
     }
 
-    public Task DeleteAsync(Guid id)
+    public Task<bool> ExistAsync(string email)
     {
-        throw new NotImplementedException();
+        return _Context
+            .Users
+            .AnyAsync(u => u.Email == email);
     }
 
     public async Task<IReadOnlyCollection<User>> GetAllAsync()
@@ -37,8 +39,11 @@ public sealed class UserRepository(IAppDbContext context)
             .FindAsync(id);
     }
 
-    public Task<User> UpdateAsync(Guid id, User user)
+    public async Task<User?> GetByUserNameAsync(string userName)
     {
-        throw new NotImplementedException();
+        return await
+            _Context
+            .Users
+            .FindAsync(userName);
     }
 }

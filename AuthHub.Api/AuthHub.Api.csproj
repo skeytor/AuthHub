@@ -17,5 +17,7 @@
   <ItemGroup>
     <ProjectReference Include="..\AuthHub.Percistence\AuthHub.Persistence.csproj" />
   </ItemGroup>
-
+	<ItemGroup>
+		<InternalsVisibleTo Include="AuthHub.Api.IntegrationTest" />
+	</ItemGroup>
 </Project>
