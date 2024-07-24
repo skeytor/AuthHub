@@ -1,6 +1,6 @@
-﻿namespace AuthHub.Api.IntegrationTest;
+﻿namespace AuthHub.Api.IntegrationTest.Fixtures;
 
 
 [CollectionDefinition(nameof(WebApplicationCollectionFixture))]
-public class WebApplicationCollectionFixture 
+public class WebApplicationCollectionFixture
     : ICollectionFixture<IntegrationTestWebApplicationFactory<Program>>;

@@ -10,10 +10,10 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Add repositories
+// Add app repositories
 builder.Services.AddRepositories(builder.Configuration);
 
-// Add application services
+// Add app services
 builder.Services.AddAppServices();
 
 var app = builder.Build();

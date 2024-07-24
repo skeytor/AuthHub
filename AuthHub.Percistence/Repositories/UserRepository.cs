@@ -23,7 +23,7 @@ public sealed class UserRepository(IAppDbContext context)
             .AnyAsync(u => u.Email == email);
     }
 
-    public async Task<IReadOnlyCollection<User>> GetAllAsync()
+    public async Task<IReadOnlyList<User>> GetAllAsync()
     {
         return await _Context
             .Users

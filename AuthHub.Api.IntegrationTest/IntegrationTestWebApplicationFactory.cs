@@ -1,5 +1,4 @@
 ﻿using AuthHub.Persistence;
-using AuthHub.Persistence.Abstractions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -12,15 +11,15 @@ namespace AuthHub.Api.IntegrationTest;
 
 // Program.cs is default internal
 ///
-public class IntegrationTestWebApplicationFactory<TProgram> 
+public class IntegrationTestWebApplicationFactory<TProgram>
     : WebApplicationFactory<TProgram> where TProgram : class
 {
-    public IAppDbContext? Context { get; private set; }
+    public AppDbContext? Context { get; private set; }
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.ConfigureTestServices(services =>
         {
-            services.RemoveAll(typeof(DbContextOptions<AppDbContext>));
+            services.RemoveAll<DbContextOptions<AppDbContext>>();
             string? connString = GetConnectionString();
             services.AddSqlServer<AppDbContext>(connString);
             var dbContext = CreateDbContext(services);
