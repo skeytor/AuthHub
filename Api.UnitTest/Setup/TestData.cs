@@ -24,13 +24,15 @@ internal static class TestData
             .RuleFor(r => r.Description, f => f.Name.JobDescriptor());
         return roleFaker.Generate(count);
     }
-    public static List<UserResponse> GenerateFakeUsersResponse(int count) 
+    public static List<UserResponse> GenerateFakeUsersResponse(int count)
     {
-        Faker<UserResponse> userResponse = new Faker<UserResponse>()
-            .RuleFor(u => u.Id, _ => Guid.NewGuid())
-            .RuleFor(u => u.Name, f => f.Name.FirstName())
-            .RuleFor(u => u.Email, f => f.Internet.Email())
-            .RuleFor(u => u.LastName, f => f.Name.LastName());
-        return userResponse.Generate(count);
+        var fakerUserResponse = new Faker<UserResponse>()
+            .CustomInstantiator(f =>
+                new UserResponse(
+                    Guid.NewGuid(),
+                    f.Name.FirstName(),
+                    f.Internet.Email(),
+                    f.Name.LastName()));
+        return fakerUserResponse.Generate(count, nameof(fakerUserResponse));
     }
 }
