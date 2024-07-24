@@ -7,8 +7,8 @@ public class SetupUserControllerValidTestData : TheoryData<List<UserResponse>>
 {
     public SetupUserControllerValidTestData()
     {
-        Add(TestData.GenerateFakeUsersResponse(1));
-        Add(TestData.GenerateFakeUsersResponse(4));
-        Add(TestData.GenerateFakeUsersResponse(10));
+        Add(UserTestDataFactory.GenerateFakeUsersResponse(1));
+        Add(UserTestDataFactory.GenerateFakeUsersResponse(4));
+        Add(UserTestDataFactory.GenerateFakeUsersResponse(10));
     }
 }

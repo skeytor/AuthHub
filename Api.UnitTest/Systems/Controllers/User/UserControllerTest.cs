@@ -17,7 +17,7 @@ public class UserControllerTest
         // Arrange
         var mockUserService = new Mock<IUserService>();
         mockUserService
-            .Setup(service => service.GetAllUsers())
+            .Setup(service => service.GetAllAsync())
             .ReturnsAsync(fakeUsers)
             .Verifiable(Times.Once());
         UserController userController = new(mockUserService.Object);
@@ -64,7 +64,7 @@ public class UserControllerTest
         );
         var mockUserService = new Mock<IUserService>();
         mockUserService
-            .Setup(service => service.Create(request))
+            .Setup(service => service.CreateAsync(request))
             .ReturnsAsync(Guid.NewGuid())
             .Verifiable(Times.Once());
 

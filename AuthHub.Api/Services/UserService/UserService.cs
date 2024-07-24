@@ -12,13 +12,13 @@ public sealed class UserService(
     IUnitOfWork unitOfWork,
     IPasswordHasher<User> passwordHasher) : IUserService
 {
-    public async Task<Result<Guid>> Create(CreateUserRequest request)
+    public async Task<Result<Guid>> CreateAsync(CreateUserRequest request)
     {
         bool checkUser = await userRepository.ExistAsync(request.Email);
         if (checkUser)
         {
             return Result
-                .Failure<Guid>(Error.Conflict("User.AlreadyEmail", $"Email { request.Email } is already"));
+                .Failure<Guid>(Error.Conflict("User.AlreadyEmail", $"Email {request.Email} is already"));
         }
         User user = new()
         {
@@ -29,14 +29,14 @@ public sealed class UserService(
             RoleId = request.RoleId
         };
         string passwordHashed = passwordHasher
-            .HashPassword(user, request.Password); // hash password with Microsoft Identity IHashPassword provider
-        user.Password = passwordHashed; 
+            .HashPassword(user, request.Password);
+        user.Password = passwordHashed;
         User userCreated = await userRepository.CreateAsync(user);
         await unitOfWork.SaveChangesAsync();
         return userCreated.Id;
     }
 
-    public async Task<Result<IReadOnlyList<UserResponse>>> GetAllUsers()
+    public async Task<Result<IReadOnlyList<UserResponse>>> GetAllAsync()
     {
         var users = await userRepository.GetAllAsync();
         IReadOnlyList<UserResponse> result = users
@@ -44,5 +44,15 @@ public sealed class UserService(
             .ToList()
             .AsReadOnly();
         return Result.Success(result);
+    }
+
+    public async Task<Result<UserResponse>> GetByIdAsync(Guid id)
+    {
+        var user = await userRepository.GetByIdAsync(id);
+        if (user is null)
+        {
+            return Result.Failure<UserResponse>(Error.NotFound("User.Id", $"User with ID: {id} was not found"));
+        }
+        return new UserResponse(user.Id, user.FirstName, user.LastName, user.Email);
     }
 }

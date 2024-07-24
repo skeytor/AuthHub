@@ -4,9 +4,9 @@ using Bogus;
 
 namespace Api.UnitTest.Setup;
 
-internal static class TestData
+internal static class UserTestDataFactory
 {
-    public static List<User> GenerateFakeUsers(int count)
+    public static List<User> CreateMultiple(int count)
     {
         Faker<User> userFaker = new Faker<User>()
             .RuleFor(u => u.FirstName, f => f.Name.FirstName())
@@ -17,12 +17,9 @@ internal static class TestData
             .RuleFor(u => u.IsActive, f => f.Random.Bool());
         return userFaker.Generate(count);
     }
-    public static List<Role> GenerateFakeRoles(int count)
+    public static User CreateSingle()
     {
-        Faker<Role> roleFaker = new Faker<Role>()
-            .RuleFor(r => r.Name, f => f.Name.JobTitle())
-            .RuleFor(r => r.Description, f => f.Name.JobDescriptor());
-        return roleFaker.Generate(count);
+        return CreateMultiple(1).First();
     }
     public static List<UserResponse> GenerateFakeUsersResponse(int count)
     {

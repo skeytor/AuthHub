@@ -12,12 +12,12 @@ namespace Api.UnitTest.Systems.Services;
 
 public class UserServiceTest
 {
-    [Theory, ClassData(typeof(SetupUserServiceValidTestData))]
+    [Theory, ClassData(typeof(SetupUserServiceValidUsersTestData))]
     public async Task GetAllAsync_Should_ReturnUserList_WhenUsersExist(IReadOnlyList<User> expected)
     {
         // Arrange
         Mock<IUserRepository> mockUserRepository = new();
-        
+
         mockUserRepository
             .Setup(repository => repository.GetAllAsync())
             .ReturnsAsync(expected)
@@ -25,7 +25,7 @@ public class UserServiceTest
         UserService userService = new(mockUserRepository.Object, default!, default!);
 
         // Act
-        var result = await userService.GetAllUsers();
+        var result = await userService.GetAllAsync();
 
         // Assert
         mockUserRepository.Verify();
@@ -47,10 +47,10 @@ public class UserServiceTest
     {
         // Arrange
         CreateUserRequest request = new(
-            "First Name", 
-            "Last Name", 
-            "user_name", 
-            "example@email.com", 
+            "First Name",
+            "Last Name",
+            "user_name",
+            "example@email.com",
             "Pass123", RoleId: 1);
         User expected = new()
         {
@@ -70,7 +70,7 @@ public class UserServiceTest
         mockPasswordHasher.Setup(provider => provider.HashPassword(It.IsAny<User>(), request.Password))
             .Returns(It.IsAny<string>())
             .Verifiable(Times.Once());
-        
+
         mockUserRepository
             .Setup(repo => repo.ExistAsync(It.IsAny<string>()))
             .ReturnsAsync(false)
@@ -87,12 +87,12 @@ public class UserServiceTest
             .Verifiable(Times.Once());
 
         UserService userService = new(
-            mockUserRepository.Object, 
-            mockUnitOfWork.Object, 
+            mockUserRepository.Object,
+            mockUnitOfWork.Object,
             mockPasswordHasher.Object);
 
         // Act
-        var result = await userService.Create(request);
+        var result = await userService.CreateAsync(request);
 
         // Assert
         mockUserRepository.Verify();
@@ -129,17 +129,17 @@ public class UserServiceTest
         };
         Mock<IUserRepository> mockUserRepository = new();
         Mock<IUnitOfWork> mockUnitOfWork = new();
-        
+
         mockUserRepository
             .Setup(repo => repo.ExistAsync(It.IsAny<string>()))
             .ReturnsAsync(true)
             .Verifiable(Times.Once());
-        
+
         mockUserRepository
             .Setup(repo => repo.CreateAsync(It.IsAny<User>()))
             .ReturnsAsync(It.IsAny<User>())
             .Verifiable(Times.Never()); // It should never be called
-        
+
         mockUnitOfWork
             .Setup(unitOfWork => unitOfWork.SaveChangesAsync(default))
             .ReturnsAsync(0) // 0 rows affected
@@ -148,7 +148,7 @@ public class UserServiceTest
         UserService userService = new(mockUserRepository.Object, mockUnitOfWork.Object, default!);
 
         // Act
-        var result = await userService.Create(request);
+        var result = await userService.CreateAsync(request);
 
         // Assert
         mockUserRepository.Verify();
@@ -159,6 +159,36 @@ public class UserServiceTest
         result.Error.Type
             .Should()
             .Be(ErrorType.Conflict);
+    }
+
+    [Theory, ClassData(typeof(SetupUserServiceGuidUserTestData))]
+    public async Task GetUserById_Should_ReturnUser_WhenUserExists(Guid id, User userExpected)
+    {
+        // Arrange
+        Mock<IUserRepository> mockUserRepository = new();
+        mockUserRepository
+            .Setup(repo => repo.GetByIdAsync(id))
+            .ReturnsAsync(userExpected)
+            .Verifiable(Times.Once());
+        UserService userService = new(mockUserRepository.Object, default!, default!);
+
+        // Act
+        var result = await userService.GetByIdAsync(id);
+
+        // Assert
+        mockUserRepository.Verify();
+        result.IsSuccess
+            .Should()
+            .BeTrue();
+        result.Value
+            .Should()
+            .BeOfType<UserResponse>();
+        result.Value
+            .Should()
+            .NotBeNull();
+        result.Value.LastName
+            .Should()
+            .Be(userExpected.LastName);
     }
 
 }

@@ -11,7 +11,7 @@ public sealed class UserController(IUserService userService) : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var result = await userService.GetAllUsers();
+        var result = await userService.GetAllAsync();
         return result.IsSuccess
             ? Ok(result.Value)
             : BadRequest();
@@ -20,7 +20,7 @@ public sealed class UserController(IUserService userService) : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateUserRequest request)
     {
-        var result = await userService.Create(request);
+        var result = await userService.CreateAsync(request);
         return result.IsSuccess
             ? CreatedAtAction(nameof(Create), result.Value)
             : BadRequest();
