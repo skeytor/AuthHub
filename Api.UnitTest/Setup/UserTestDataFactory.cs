@@ -17,9 +17,26 @@ internal static class UserTestDataFactory
             .RuleFor(u => u.IsActive, f => f.Random.Bool());
         return userFaker.Generate(count);
     }
+    public static List<CreateUserRequest> CreateMultipleUserRequest(int count)
+    {
+        Faker<CreateUserRequest> faker = new Faker<CreateUserRequest>()
+            .CustomInstantiator(f =>
+                new CreateUserRequest(
+                    f.Name.FirstName(),
+                    f.Name.LastName(),
+                    f.Internet.UserName(),
+                    f.Internet.Email(),
+                    f.Internet.Password(),
+                    f.Random.Number(1, 7)));
+        return faker.Generate(count);
+    }
     public static User CreateSingle()
     {
         return CreateMultiple(1).First();
+    }
+    public static CreateUserRequest CreateSingleUserRequest()
+    {
+        return CreateMultipleUserRequest(1).First();
     }
     public static List<UserResponse> GenerateFakeUsersResponse(int count)
     {

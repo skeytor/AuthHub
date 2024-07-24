@@ -5,7 +5,7 @@ using AuthHub.Domain.Results;
 using AuthHub.Persistence.Abstractions;
 using Microsoft.AspNetCore.Identity;
 
-namespace AuthHub.Api.Services.UserService;
+namespace AuthHub.Api.Services.Users;
 
 public sealed class UserService(
     IUserRepository userRepository,
@@ -51,7 +51,8 @@ public sealed class UserService(
         var user = await userRepository.GetByIdAsync(id);
         if (user is null)
         {
-            return Result.Failure<UserResponse>(Error.NotFound("User.Id", $"User with ID: {id} was not found"));
+            return Result.Failure<UserResponse>(
+                Error.NotFound("User.Id", $"User with ID: {id} was not found"));
         }
         return new UserResponse(user.Id, user.FirstName, user.LastName, user.Email);
     }

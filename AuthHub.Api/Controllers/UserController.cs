@@ -1,5 +1,5 @@
 ﻿using AuthHub.Api.Dtos;
-using AuthHub.Api.Services.UserService;
+using AuthHub.Api.Services.Users;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AuthHub.Api.Controllers;

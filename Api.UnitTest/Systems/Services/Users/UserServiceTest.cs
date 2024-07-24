@@ -1,5 +1,6 @@
-﻿using AuthHub.Api.Dtos;
-using AuthHub.Api.Services.UserService;
+﻿using Api.UnitTest.Systems.Services.Users.TestData;
+using AuthHub.Api.Dtos;
+using AuthHub.Api.Services.Users;
 using AuthHub.Domain.Entities;
 using AuthHub.Domain.Repositories;
 using AuthHub.Domain.Results;
@@ -8,19 +9,19 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Identity;
 using Moq;
 
-namespace Api.UnitTest.Systems.Services;
+namespace Api.UnitTest.Systems.Services.Users;
 
 public class UserServiceTest
 {
-    [Theory, ClassData(typeof(SetupUserServiceValidUsersTestData))]
-    public async Task GetAllAsync_Should_ReturnUserList_WhenUsersExist(IReadOnlyList<User> expected)
+    [Theory, ClassData(typeof(UserListValidTestData))]
+    public async Task GetAllAsync_Should_ReturnUserList_WhenUsersExist(IReadOnlyList<User> usersExpected)
     {
         // Arrange
         Mock<IUserRepository> mockUserRepository = new();
 
         mockUserRepository
             .Setup(repository => repository.GetAllAsync())
-            .ReturnsAsync(expected)
+            .ReturnsAsync(usersExpected)
             .Verifiable(Times.Once());
         UserService userService = new(mockUserRepository.Object, default!, default!);
 
@@ -39,19 +40,14 @@ public class UserServiceTest
             .Should()
             .NotBeEmpty()
             .And
-            .HaveSameCount(expected);
+            .HaveSameCount(usersExpected);
     }
 
-    [Fact]
-    public async Task CreateAsync_Should_ReturnId_WhenUserDoesNotExist()
+    [Theory, ClassData(typeof(CreateUserValidTestData))]
+    public async Task CreateAsync_Should_ReturnId_WhenUserDoesNotExist(
+        CreateUserRequest request)
     {
         // Arrange
-        CreateUserRequest request = new(
-            "First Name",
-            "Last Name",
-            "user_name",
-            "example@email.com",
-            "Pass123", RoleId: 1);
         User expected = new()
         {
             Id = Guid.NewGuid(),
@@ -111,11 +107,11 @@ public class UserServiceTest
             .Be(expected.Id);
     }
 
-    [Fact]
-    public async Task CreateAsync_Should_ReturnErrorFailure_WhenUserExists()
+    [Theory, ClassData(typeof(CreateUserValidTestData))]
+    public async Task CreateAsync_Should_ReturnErrorFailure_WhenUserExists(
+        CreateUserRequest request)
     {
         // Arrange
-        CreateUserRequest request = new("Pepito", "Leon", "rleon", "example@email.com", "Pass123", RoleId: 1);
         User expected = new()
         {
             Id = Guid.NewGuid(),
@@ -161,7 +157,7 @@ public class UserServiceTest
             .Be(ErrorType.Conflict);
     }
 
-    [Theory, ClassData(typeof(SetupUserServiceGuidUserTestData))]
+    [Theory, ClassData(typeof(UserGuidValidTestData))]
     public async Task GetUserById_Should_ReturnUser_WhenUserExists(Guid id, User userExpected)
     {
         // Arrange
@@ -189,6 +185,30 @@ public class UserServiceTest
         result.Value.LastName
             .Should()
             .Be(userExpected.LastName);
+    }
+
+    [Theory, ClassData(typeof(UserGuidInvalidTestData))]
+    public async Task GetUserById_Should_ReturnErrorFailure_WhenUserDoesNotExist(Guid id, User userExpected)
+    {
+        // Arrange
+        Mock<IUserRepository> mockUserRepository = new();
+        mockUserRepository
+            .Setup(repo => repo.GetByIdAsync(id))
+            .ReturnsAsync(userExpected)
+            .Verifiable(Times.Once());
+        UserService userService = new(mockUserRepository.Object, default!, default!);
+
+        // Act
+        var result = await userService.GetByIdAsync(id);
+
+        // Assert
+        mockUserRepository.Verify();
+        result.IsFailure
+            .Should()
+            .BeTrue();
+        result.Error.Type
+            .Should()
+            .Be(ErrorType.NotFound);
     }
 
 }
