@@ -2,7 +2,7 @@
 using AuthHub.Domain.Entities;
 using Bogus;
 
-namespace Api.UnitTest.Setup;
+namespace Api.UnitTest.Setup.Factories;
 
 internal static class UserTestDataFactory
 {
@@ -34,6 +34,7 @@ internal static class UserTestDataFactory
     {
         return CreateMultiple(1).First();
     }
+
     public static CreateUserRequest CreateSingleUserRequest()
     {
         return CreateMultipleUserRequest(1).First();

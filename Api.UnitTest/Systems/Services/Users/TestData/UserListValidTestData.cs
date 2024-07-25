@@ -1,4 +1,5 @@
-﻿using Api.UnitTest.Setup;
+﻿using Api.UnitTest.Setup.Factories;
+using Api.UnitTest.Setup.Factories.Implementations;
 using AuthHub.Domain.Entities;
 
 namespace Api.UnitTest.Systems.Services.Users.TestData;
@@ -7,8 +8,10 @@ public class UserListValidTestData : TheoryData<List<User>>
 {
     public UserListValidTestData()
     {
-        Add(UserTestDataFactory.CreateMultiple(4));
-        Add(UserTestDataFactory.CreateMultiple(12));
-        Add(UserTestDataFactory.CreateMultiple(1));
+        var testData = new TestDataFactory<UserData, User>().Create();
+        Add(testData.Multiple(6));
+        Add(testData.Multiple(1));
+        Add(testData.Multiple(4));
+        Add(testData.Multiple(10));
     }
 }
