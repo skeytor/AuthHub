@@ -1,5 +1,4 @@
 ﻿using Api.UnitTest.Systems.Controllers.Users.TestsData;
-using Api.UnitTest.Systems.Services.Users.TestData;
 using AuthHub.Api.Controllers;
 using AuthHub.Api.Dtos;
 using AuthHub.Api.Services.Users;
@@ -85,5 +84,28 @@ public class UserControllerTest
         userId
             .Should()
             .NotBeEmpty();
+    }
+
+    [Theory, ClassData(typeof(UserControllerUserResponseGuidValidTestData))]
+    public async Task GetById_Should_ReturnUser_WhenUserExists(Guid id, UserResponse expected)
+    {
+        // Arrange
+        Mock<IUserService> userServiceMock = new();
+        userServiceMock
+            .Setup(service => service.GetByIdAsync(id))
+            .ReturnsAsync(expected)
+            .Verifiable(Times.Once());
+        UserController userController = new(userServiceMock.Object);
+
+        // Act
+        var sutActionResult = await userController.GetById(id);
+
+        // Assert
+        sutActionResult.Should().BeOfType<OkObjectResult>();
+        OkObjectResult result = (OkObjectResult)sutActionResult;
+        result.StatusCode.Should().Be(StatusCodes.Status200OK);
+        result.Value.Should().BeOfType<UserResponse>();
+        var data = (UserResponse)result.Value!;
+        data.Should().NotBeNull();
     }
 }

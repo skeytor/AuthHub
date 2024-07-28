@@ -6,7 +6,7 @@ namespace Api.UnitTest.Setup.Factories;
 
 internal static class UserTestDataFactory
 {
-    public static List<User> CreateMultiple(int count)
+    public static List<User> CreateManyUsers(int count)
     {
         Faker<User> userFaker = new Faker<User>()
             .RuleFor(u => u.FirstName, f => f.Name.FirstName())
@@ -17,7 +17,7 @@ internal static class UserTestDataFactory
             .RuleFor(u => u.IsActive, f => f.Random.Bool());
         return userFaker.Generate(count);
     }
-    public static List<CreateUserRequest> CreateMultipleUserRequest(int count)
+    public static List<CreateUserRequest> CreateManyUserRequests(int count)
     {
         Faker<CreateUserRequest> faker = new Faker<CreateUserRequest>()
             .CustomInstantiator(f =>
@@ -30,16 +30,16 @@ internal static class UserTestDataFactory
                     f.Random.Number(1, 7)));
         return faker.Generate(count);
     }
-    public static User CreateSingle()
+    public static User CreateSingleUser()
     {
-        return CreateMultiple(1).First();
+        return CreateManyUsers(1).First();
     }
 
     public static CreateUserRequest CreateSingleUserRequest()
     {
-        return CreateMultipleUserRequest(1).First();
+        return CreateManyUserRequests(1).First();
     }
-    public static List<UserResponse> GenerateFakeUsersResponse(int count)
+    public static List<UserResponse> CreateManyUserResponses(int count)
     {
         var fakerUserResponse = new Faker<UserResponse>()
             .CustomInstantiator(f =>
