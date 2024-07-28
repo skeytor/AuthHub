@@ -1,4 +1,4 @@
-﻿using AuthHub.Api.Services.UserService;
+﻿using AuthHub.Api.Services.Users;
 using AuthHub.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 

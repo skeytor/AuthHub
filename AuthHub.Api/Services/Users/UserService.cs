@@ -5,7 +5,7 @@ using AuthHub.Domain.Results;
 using AuthHub.Persistence.Abstractions;
 using Microsoft.AspNetCore.Identity;
 
-namespace AuthHub.Api.Services.UserService;
+namespace AuthHub.Api.Services.Users;
 
 public sealed class UserService(
     IUserRepository userRepository,
@@ -14,11 +14,10 @@ public sealed class UserService(
 {
     public async Task<Result<Guid>> CreateAsync(CreateUserRequest request)
     {
-        bool checkUser = await userRepository.ExistAsync(request.Email);
-        if (checkUser)
+        if (await userRepository.ExistAsync(request.Email))
         {
-            return Result
-                .Failure<Guid>(Error.Conflict("User.AlreadyEmail", $"Email {request.Email} is already"));
+            return Result.Failure<Guid>(
+                Error.Conflict("User.AlreadyEmail", $"Email {request.Email} is already"));
         }
         User user = new()
         {
@@ -31,9 +30,11 @@ public sealed class UserService(
         string passwordHashed = passwordHasher
             .HashPassword(user, request.Password);
         user.Password = passwordHashed;
-        User userCreated = await userRepository.CreateAsync(user);
+        var guid = await userRepository
+            .CreateAsync(user)
+            .ContinueWith(s => s.Result.Id);
         await unitOfWork.SaveChangesAsync();
-        return userCreated.Id;
+        return guid;
     }
 
     public async Task<Result<IReadOnlyList<UserResponse>>> GetAllAsync()
@@ -51,7 +52,8 @@ public sealed class UserService(
         var user = await userRepository.GetByIdAsync(id);
         if (user is null)
         {
-            return Result.Failure<UserResponse>(Error.NotFound("User.Id", $"User with ID: {id} was not found"));
+            return Result.Failure<UserResponse>(
+                Error.NotFound("User.Id", $"User with ID: {id} was not found"));
         }
         return new UserResponse(user.Id, user.FirstName, user.LastName, user.Email);
     }

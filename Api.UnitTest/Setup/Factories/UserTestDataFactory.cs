@@ -2,11 +2,11 @@
 using AuthHub.Domain.Entities;
 using Bogus;
 
-namespace Api.UnitTest.Setup;
+namespace Api.UnitTest.Setup.Factories;
 
 internal static class UserTestDataFactory
 {
-    public static List<User> CreateMultiple(int count)
+    public static List<User> CreateManyUsers(int count)
     {
         Faker<User> userFaker = new Faker<User>()
             .RuleFor(u => u.FirstName, f => f.Name.FirstName())
@@ -17,11 +17,29 @@ internal static class UserTestDataFactory
             .RuleFor(u => u.IsActive, f => f.Random.Bool());
         return userFaker.Generate(count);
     }
-    public static User CreateSingle()
+    public static List<CreateUserRequest> CreateManyUserRequests(int count)
     {
-        return CreateMultiple(1).First();
+        Faker<CreateUserRequest> faker = new Faker<CreateUserRequest>()
+            .CustomInstantiator(f =>
+                new CreateUserRequest(
+                    f.Name.FirstName(),
+                    f.Name.LastName(),
+                    f.Internet.UserName(),
+                    f.Internet.Email(),
+                    f.Internet.Password(),
+                    f.Random.Number(1, 7)));
+        return faker.Generate(count);
     }
-    public static List<UserResponse> GenerateFakeUsersResponse(int count)
+    public static User CreateSingleUser()
+    {
+        return CreateManyUsers(1).First();
+    }
+
+    public static CreateUserRequest CreateSingleUserRequest()
+    {
+        return CreateManyUserRequests(1).First();
+    }
+    public static List<UserResponse> CreateManyUserResponses(int count)
     {
         var fakerUserResponse = new Faker<UserResponse>()
             .CustomInstantiator(f =>

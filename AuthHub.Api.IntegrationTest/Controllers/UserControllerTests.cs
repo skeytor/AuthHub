@@ -73,7 +73,7 @@ public class UserControllerTests(IntegrationTestWebApplicationFactory<Program> f
             "user_name",
             "example@email.com",
             "Rober123",
-            RoleId: 1);
+            RoleId: role.Id);
 
         // Act
         HttpResponseMessage response = await _httpClient.PostAsJsonAsync("/api/user", request);
@@ -93,5 +93,40 @@ public class UserControllerTests(IntegrationTestWebApplicationFactory<Program> f
         userCreated!.Id.Should().Be(userId);
         userCreated!.Username.Should().Be(request.UserName);
         // check others properties if you want...
+    }
+
+    [Fact]
+    public async Task GetById_Should_ReturnUserSuccess_WhenUserExists()
+    {
+        // Arrange
+        var role = new Role()
+        {
+            Name = "admin1",
+            Description = "This is admin user"
+        };
+        var user = new User()
+        {
+            FirstName = "First Name",
+            LastName = "Last Name",
+            Email = "email@example1.com",
+            Password = "Pass123@",
+            Username = "user_name1",
+            Role = role
+        };
+        await _context.Roles.AddAsync(role);
+        await _context.Users.AddAsync(user);
+        await _context.SaveChangesAsync();
+        Guid id = user.Id;
+        
+        // Act
+        HttpResponseMessage response = await _httpClient.GetAsync($"/api/user/{id}");
+
+        // Assert
+        response.EnsureSuccessStatusCode();
+        response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
+        var data = await response.Content.ReadFromJsonAsync<UserResponse>();
+        data?.Id.Should().Be(id);
+        data?.Name.Should().Be(user.FirstName);
+        data?.LastName.Should().Be(user.LastName);
     }
 }

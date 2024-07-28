@@ -1,24 +1,26 @@
-﻿using AuthHub.Api.Controllers;
+﻿using Api.UnitTest.Systems.Controllers.Users.TestsData;
+using AuthHub.Api.Controllers;
 using AuthHub.Api.Dtos;
-using AuthHub.Api.Services.UserService;
+using AuthHub.Api.Services.Users;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 
-namespace Api.UnitTest.Systems.Controllers.User;
+namespace Api.UnitTest.Systems.Controllers.Users;
 
 public class UserControllerTest
 {
 
-    [Theory, ClassData(typeof(SetupUserControllerValidTestData))]
-    public async Task GetAll_Should_ReturnUserResponseList_WhenUsersExist(List<UserResponse> fakeUsers)
+    [Theory, ClassData(typeof(UserResponseListValidTestData))]
+    public async Task GetAll_Should_ReturnUserResponseList_WhenUsersExist(
+        List<UserResponse> usersExpected)
     {
         // Arrange
         var mockUserService = new Mock<IUserService>();
         mockUserService
             .Setup(service => service.GetAllAsync())
-            .ReturnsAsync(fakeUsers)
+            .ReturnsAsync(usersExpected)
             .Verifiable(Times.Once());
         UserController userController = new(mockUserService.Object);
 
@@ -32,12 +34,10 @@ public class UserControllerTest
             .BeOfType<OkObjectResult>();
 
         OkObjectResult okObjectResult = (OkObjectResult)sutActionResult;
-        okObjectResult
-            .StatusCode
+        okObjectResult.StatusCode
             .Should()
             .Be(StatusCodes.Status200OK);
-        okObjectResult
-            .Value
+        okObjectResult.Value
             .Should()
             .BeAssignableTo<IReadOnlyCollection<UserResponse>>();
 
@@ -46,26 +46,19 @@ public class UserControllerTest
             .Should()
             .NotBeEmpty()
             .And
-            .HaveSameCount(fakeUsers);
+            .HaveSameCount(usersExpected);
     }
 
 
-    [Fact]
-    public async Task Create_Should_ReturnUserId_WhenRequestDataIsValid()
+    [Theory, ClassData(typeof(UserControllerCreateUserValidTestData))]
+    public async Task Create_Should_ReturnUserId_WhenRequestDataIsValid(
+        CreateUserRequest request, Guid idExpected)
     {
         // Arrange
-        CreateUserRequest request = new(
-            "First Name",
-            "Last Name",
-            "user_name",
-            "example@email.com",
-            "P@ssword123",
-            1
-        );
         var mockUserService = new Mock<IUserService>();
         mockUserService
             .Setup(service => service.CreateAsync(request))
-            .ReturnsAsync(Guid.NewGuid())
+            .ReturnsAsync(idExpected)
             .Verifiable(Times.Once());
 
         UserController userController = new(mockUserService.Object);
@@ -80,12 +73,10 @@ public class UserControllerTest
             .BeOfType<CreatedAtActionResult>();
 
         CreatedAtActionResult createdResult = (CreatedAtActionResult)sutActionResult;
-        createdResult
-            .StatusCode
+        createdResult.StatusCode
             .Should()
             .Be(StatusCodes.Status201Created);
-        createdResult
-            .Value
+        createdResult.Value
             .Should()
             .BeOfType<Guid>();
 
@@ -93,5 +84,28 @@ public class UserControllerTest
         userId
             .Should()
             .NotBeEmpty();
+    }
+
+    [Theory, ClassData(typeof(UserControllerUserResponseGuidValidTestData))]
+    public async Task GetById_Should_ReturnUser_WhenUserExists(Guid id, UserResponse expected)
+    {
+        // Arrange
+        Mock<IUserService> userServiceMock = new();
+        userServiceMock
+            .Setup(service => service.GetByIdAsync(id))
+            .ReturnsAsync(expected)
+            .Verifiable(Times.Once());
+        UserController userController = new(userServiceMock.Object);
+
+        // Act
+        var sutActionResult = await userController.GetById(id);
+
+        // Assert
+        sutActionResult.Should().BeOfType<OkObjectResult>();
+        OkObjectResult result = (OkObjectResult)sutActionResult;
+        result.StatusCode.Should().Be(StatusCodes.Status200OK);
+        result.Value.Should().BeOfType<UserResponse>();
+        var data = (UserResponse)result.Value!;
+        data.Should().NotBeNull();
     }
 }
