@@ -2,6 +2,7 @@
 using AuthHub.Api.Controllers;
 using AuthHub.Api.Dtos;
 using AuthHub.Api.Services.Users;
+using Azure.Core;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -101,11 +102,52 @@ public class UserControllerTest
         var sutActionResult = await userController.GetById(id);
 
         // Assert
-        sutActionResult.Should().BeOfType<OkObjectResult>();
+        sutActionResult
+            .Should()
+            .BeOfType<OkObjectResult>();
         OkObjectResult result = (OkObjectResult)sutActionResult;
-        result.StatusCode.Should().Be(StatusCodes.Status200OK);
-        result.Value.Should().BeOfType<UserResponse>();
+        result.StatusCode
+            .Should()
+            .Be(StatusCodes.Status200OK);
+        result.Value
+            .Should()
+            .BeOfType<UserResponse>();
         var data = (UserResponse)result.Value!;
         data.Should().NotBeNull();
+    }
+
+    [Fact]
+    public async Task Update_Should_ReturnUserId_WhenUserExists()
+    {
+        // Arrange
+        Guid id = Guid.NewGuid();
+        CreateUserRequest request = new(
+            "Name changed",
+            "Last name changed",
+            "Username changed",
+            "example_changed@email.com",
+            "Pas12Changed",
+            RoleId: 4);
+        Mock<IUserService> mockUserServiceMock = new();
+        mockUserServiceMock
+            .Setup(service => 
+                service.Update(It.IsAny<Guid>(), It.IsAny<CreateUserRequest>()))
+            .ReturnsAsync(id)
+            .Verifiable(Times.Once());
+        UserController userController = new(mockUserServiceMock.Object);
+
+        // Act
+        var sutActionResult = await userController.Update(id, request);
+
+        // Asseert
+        mockUserServiceMock.Verify();
+        sutActionResult.Should().BeOfType<OkObjectResult>();
+        OkObjectResult result = (OkObjectResult)sutActionResult;
+        result.StatusCode
+            .Should()
+            .Be(StatusCodes.Status200OK);
+        result.Value.Should().BeOfType<Guid>();
+        var guid = (Guid)result.Value!;
+        guid.Should().NotBeEmpty();
     }
 }

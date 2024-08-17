@@ -129,4 +129,49 @@ public class UserControllerTests(IntegrationTestWebApplicationFactory<Program> f
         data?.Name.Should().Be(user.FirstName);
         data?.LastName.Should().Be(user.LastName);
     }
+
+    [Fact]
+    public async Task Update_Should_Return200StatusCode_WhenRequestDataIsValid()
+    {
+        // Arrange
+        var role = new Role()
+        {
+            Name = "admin1",
+            Description = "This is admin user"
+        };
+        var user = new User()
+        {
+            FirstName = "First Name",
+            LastName = "Last Name",
+            Email = "email@example2.com",
+            Password = "Pass123@",
+            Username = "user_name3",
+            Role = role
+        };
+        await _context.Roles.AddAsync(role);
+        await _context.Users.AddAsync(user);
+        await _context.SaveChangesAsync();
+        CreateUserRequest request = new(
+            "Name changed",
+            "Last Name changed",
+            "user_changed",
+            "example_changed@email.com",
+            "PassChanged123$",
+            RoleId: role.Id);
+
+        // Act
+        HttpResponseMessage response = await _httpClient.PutAsJsonAsync(
+            $"/api/user/{user.Id}",
+            request);
+        
+        // Assert
+        response.EnsureSuccessStatusCode();
+        response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
+        var id = await response.Content.ReadFromJsonAsync<Guid>();
+        id.Should().NotBeEmpty();
+        var userChanged = await _context.Users.FindAsync(id);
+        userChanged?.FirstName.Should().Be(request.FirstName);
+        userChanged?.LastName.Should().Be(request.LastName);
+        userChanged?.Username.Should().Be(request.UserName);
+    }
 }

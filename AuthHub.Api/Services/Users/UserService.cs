@@ -14,10 +14,15 @@ public sealed class UserService(
 {
     public async Task<Result<Guid>> CreateAsync(CreateUserRequest request)
     {
-        if (await userRepository.ExistAsync(request.Email))
+        if (!await userRepository.IsUniqueByEmailAsync(request.Email))
         {
             return Result.Failure<Guid>(
                 Error.Conflict("User.AlreadyEmail", $"Email {request.Email} is already"));
+        }
+        if (!await userRepository.IsUniqueByUserNameAsync(request.UserName))
+        {
+            return Result.Failure<Guid>(
+                Error.Conflict("User.Username", $"Username: {request.UserName} is already"));
         }
         User user = new()
         {
@@ -27,11 +32,9 @@ public sealed class UserService(
             Email = request.Email,
             RoleId = request.RoleId
         };
-        string passwordHashed = passwordHasher
-            .HashPassword(user, request.Password);
-        user.Password = passwordHashed;
+        user.Password = passwordHasher.HashPassword(user, request.Password);
         var guid = await userRepository
-            .CreateAsync(user)
+            .InsertAsync(user)
             .ContinueWith(s => s.Result.Id);
         await unitOfWork.SaveChangesAsync();
         return guid;
@@ -57,4 +60,33 @@ public sealed class UserService(
         }
         return new UserResponse(user.Id, user.FirstName, user.LastName, user.Email);
     }
+
+    public async Task<Result<Guid>> Update(Guid id, CreateUserRequest request)
+    {
+        var user = await userRepository.GetByIdAsync(id);
+        if (user is null)
+        {
+            return Result.Failure<Guid>(
+                Error.NotFound("User.Id", $"User with ID: {id} was not found"));
+        }
+        if (!await userRepository.IsUniqueByEmailAsync(user.Email)) 
+        {
+            return Result.Failure<Guid>(
+                Error.Conflict("User.Email", $"Email: {request.Email} is already"));
+        }
+        if (!await userRepository.IsUniqueByUserNameAsync(user.Username))
+        {
+            return Result.Failure<Guid>(
+                        Error.NotFound("User.Username", $"Userbane: {request.UserName} is already"));
+        }
+        user.FirstName = request.FirstName;
+        user.LastName = request.LastName;
+        user.Username = request.UserName;
+        user.Email = request.Email;
+        user.RoleId = request.RoleId;
+        user.Password = passwordHasher.HashPassword(user, request.Password);
+        await unitOfWork.SaveChangesAsync();
+        return user.Id;
+    }
+
 }

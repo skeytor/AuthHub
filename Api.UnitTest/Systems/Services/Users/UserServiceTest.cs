@@ -63,17 +63,22 @@ public class UserServiceTest
         Mock<IUnitOfWork> mockUnitOfWork = new();
         Mock<IPasswordHasher<User>> mockPasswordHasher = new();
 
-        mockPasswordHasher.Setup(provider => provider.HashPassword(It.IsAny<User>(), request.Password))
+        mockPasswordHasher.Setup(provider =>
+                provider.HashPassword(It.IsAny<User>(), request.Password))
             .Returns(It.IsAny<string>())
             .Verifiable(Times.Once());
 
         mockUserRepository
-            .Setup(repo => repo.ExistAsync(It.IsAny<string>()))
-            .ReturnsAsync(false)
+            .Setup(repo => repo.IsUniqueByEmailAsync(It.IsAny<string>()))
+            .ReturnsAsync(true)
+            .Verifiable(Times.Once());
+        mockUserRepository
+            .Setup(repo => repo.IsUniqueByUserNameAsync(It.IsAny<string>()))
+            .ReturnsAsync(true)
             .Verifiable(Times.Once());
 
         mockUserRepository
-            .Setup(repo => repo.CreateAsync(It.IsAny<User>()))
+            .Setup(repo => repo.InsertAsync(It.IsAny<User>()))
             .ReturnsAsync(expected)
             .Verifiable(Times.Once());
 
@@ -127,12 +132,12 @@ public class UserServiceTest
         Mock<IUnitOfWork> mockUnitOfWork = new();
 
         mockUserRepository
-            .Setup(repo => repo.ExistAsync(It.IsAny<string>()))
-            .ReturnsAsync(true)
+            .Setup(repo => repo.IsUniqueByEmailAsync(It.IsAny<string>()))
+            .ReturnsAsync(false)
             .Verifiable(Times.Once());
 
         mockUserRepository
-            .Setup(repo => repo.CreateAsync(It.IsAny<User>()))
+            .Setup(repo => repo.InsertAsync(It.IsAny<User>()))
             .ReturnsAsync(It.IsAny<User>())
             .Verifiable(Times.Never()); // It should never be called
 
@@ -211,4 +216,61 @@ public class UserServiceTest
             .Be(ErrorType.NotFound);
     }
 
+    [Fact]
+    public async Task Update_Should_ReturnUserId_WhenUserExists()
+    {
+        // Arrange
+        Guid id = Guid.NewGuid();
+        User userRecord = new()
+        {
+            Id = id,
+            Username = "username",
+            FirstName = "Example",
+            LastName = "Example",
+            Email = "example@email.com",
+            Password = "password",
+            IsActive = true,
+            RoleId = 1
+        };
+        CreateUserRequest request = new(
+            "Name changed",
+            "Last name changed",
+            "Username changed",
+            "example_changed@email.com",
+            "Pas12Changed",
+            RoleId: 4);
+
+        Mock<IUserRepository> mockUserRepository = new();
+        Mock<IUnitOfWork> mockUnitOfWork = new();
+        PasswordHasher<User> passwordHasher = new();
+        mockUserRepository.Setup(repo => repo.GetByIdAsync(id))
+            .ReturnsAsync(userRecord)
+            .Verifiable(Times.Once());
+
+        mockUserRepository.Setup(repo =>
+                repo.IsUniqueByEmailAsync(It.IsAny<string>()))
+            .ReturnsAsync(true)
+            .Verifiable(Times.Once());
+
+        mockUserRepository.Setup(repo => repo.IsUniqueByUserNameAsync(It.IsAny<string>()))
+            .ReturnsAsync(true)
+            .Verifiable(Times.Once());
+
+        mockUnitOfWork
+            .Setup(unitOfWork => unitOfWork.SaveChangesAsync(default))
+            .ReturnsAsync(1)
+            .Verifiable(Times.Once()); // A row affected
+
+        UserService userService = new(mockUserRepository.Object, mockUnitOfWork.Object, passwordHasher);
+
+        // Act
+        var result = await userService.Update(id, request);
+
+        // Assert
+        mockUserRepository.Verify();
+        mockUnitOfWork.Verify();
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Should().Be(id);
+
+    }
 }

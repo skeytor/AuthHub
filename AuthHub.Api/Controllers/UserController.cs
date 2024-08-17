@@ -34,4 +34,14 @@ public sealed class UserController(IUserService userService) : ControllerBase
             ? Ok(result.Value)
             : NotFound();
     }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(
+        [FromRoute] Guid id, CreateUserRequest request)
+    {
+        var result = await userService.Update(id, request);
+        return result.IsSuccess
+            ? Ok(result.Value)
+            : BadRequest();
+    }
 }
