@@ -14,12 +14,12 @@ public sealed class UserService(
 {
     public async Task<Result<Guid>> CreateAsync(CreateUserRequest request)
     {
-        if (!await userRepository.IsUniqueByEmailAsync(request.Email))
+        if (await userRepository.EmailExistsAsync(request.Email))
         {
             return Result.Failure<Guid>(
                 Error.Conflict("User.AlreadyEmail", $"Email {request.Email} is already"));
         }
-        if (!await userRepository.IsUniqueByUserNameAsync(request.UserName))
+        if (await userRepository.UserNameExistsAsync(request.UserName))
         {
             return Result.Failure<Guid>(
                 Error.Conflict("User.Username", $"Username: {request.UserName} is already"));
@@ -69,12 +69,12 @@ public sealed class UserService(
             return Result.Failure<Guid>(
                 Error.NotFound("User.Id", $"User with ID: {id} was not found"));
         }
-        if (!await userRepository.IsUniqueByEmailAsync(user.Email)) 
+        if (!await userRepository.EmailExistsAsync(user.Email)) 
         {
             return Result.Failure<Guid>(
                 Error.Conflict("User.Email", $"Email: {request.Email} is already"));
         }
-        if (!await userRepository.IsUniqueByUserNameAsync(user.Username))
+        if (!await userRepository.UserNameExistsAsync(user.Username))
         {
             return Result.Failure<Guid>(
                         Error.NotFound("User.Username", $"Userbane: {request.UserName} is already"));

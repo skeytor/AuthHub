@@ -3,6 +3,7 @@ using AuthHub.Api.IntegrationTest.Fixtures;
 using AuthHub.Domain.Entities;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Net.Http.Json;
 
 namespace AuthHub.Api.IntegrationTest.Controllers;
@@ -136,7 +137,7 @@ public class UserControllerTests(IntegrationTestWebApplicationFactory<Program> f
         // Arrange
         var role = new Role()
         {
-            Name = "admin1",
+            Name = "admin1x",
             Description = "This is admin user"
         };
         var user = new User()
@@ -167,9 +168,12 @@ public class UserControllerTests(IntegrationTestWebApplicationFactory<Program> f
         // Assert
         response.EnsureSuccessStatusCode();
         response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
-        var id = await response.Content.ReadFromJsonAsync<Guid>();
+
+        Guid id = await response.Content.ReadFromJsonAsync<Guid>();
         id.Should().NotBeEmpty();
+        
         var userChanged = await _context.Users.FindAsync(id);
+
         userChanged?.FirstName.Should().Be(request.FirstName);
         userChanged?.LastName.Should().Be(request.LastName);
         userChanged?.Username.Should().Be(request.UserName);

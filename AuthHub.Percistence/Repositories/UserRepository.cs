@@ -31,11 +31,11 @@ public sealed class UserRepository(IAppDbContext context)
             .Users
             .FindAsync(userName);
 
-    public Task<bool> IsUniqueByEmailAsync(string email) => _Context
+    public Task<bool> EmailExistsAsync(string email) => _Context
             .Users
             .AnyAsync(u => u.Email == email);
 
-    public Task<bool> IsUniqueByUserNameAsync(string userName) => _Context
+    public Task<bool> UserNameExistsAsync(string userName) => _Context
             .Users
             .AnyAsync(u => u.Username == userName);
 

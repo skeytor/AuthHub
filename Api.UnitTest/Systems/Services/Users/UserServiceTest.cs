@@ -69,12 +69,12 @@ public class UserServiceTest
             .Verifiable(Times.Once());
 
         mockUserRepository
-            .Setup(repo => repo.IsUniqueByEmailAsync(It.IsAny<string>()))
-            .ReturnsAsync(true)
+            .Setup(repo => repo.EmailExistsAsync(It.IsAny<string>()))
+            .ReturnsAsync(false)
             .Verifiable(Times.Once());
         mockUserRepository
-            .Setup(repo => repo.IsUniqueByUserNameAsync(It.IsAny<string>()))
-            .ReturnsAsync(true)
+            .Setup(repo => repo.UserNameExistsAsync(It.IsAny<string>()))
+            .ReturnsAsync(false)
             .Verifiable(Times.Once());
 
         mockUserRepository
@@ -132,8 +132,8 @@ public class UserServiceTest
         Mock<IUnitOfWork> mockUnitOfWork = new();
 
         mockUserRepository
-            .Setup(repo => repo.IsUniqueByEmailAsync(It.IsAny<string>()))
-            .ReturnsAsync(false)
+            .Setup(repo => repo.EmailExistsAsync(It.IsAny<string>()))
+            .ReturnsAsync(true)
             .Verifiable(Times.Once());
 
         mockUserRepository
@@ -248,11 +248,11 @@ public class UserServiceTest
             .Verifiable(Times.Once());
 
         mockUserRepository.Setup(repo =>
-                repo.IsUniqueByEmailAsync(It.IsAny<string>()))
+                repo.EmailExistsAsync(It.IsAny<string>()))
             .ReturnsAsync(true)
             .Verifiable(Times.Once());
 
-        mockUserRepository.Setup(repo => repo.IsUniqueByUserNameAsync(It.IsAny<string>()))
+        mockUserRepository.Setup(repo => repo.UserNameExistsAsync(It.IsAny<string>()))
             .ReturnsAsync(true)
             .Verifiable(Times.Once());
 
