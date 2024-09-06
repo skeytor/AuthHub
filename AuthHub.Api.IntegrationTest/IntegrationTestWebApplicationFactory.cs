@@ -23,26 +23,8 @@ public class IntegrationTestWebApplicationFactory<TProgram>
         {
             services.RemoveAll<DbContextOptions<AppDbContext>>();
             services.AddSqlServer<AppDbContext>(_msSqlContainer.GetConnectionString());
-            //var dbContext = CreateDbContext(services);
-            //dbContext.Database.EnsureDeleted();
         });
     }
-    /*private static string? GetConnectionString()
-    {
-        var configuration = new ConfigurationBuilder()
-            .AddUserSecrets<IntegrationTestWebApplicationFactory<TProgram>>()
-            .Build();
-        string? connString = configuration.GetConnectionString("AuthHub");
-        return connString;
-    }*/
-    /*private static AppDbContext CreateDbContext(IServiceCollection services)
-    {
-        ServiceProvider serviceProvider = services.BuildServiceProvider();
-        IServiceScope scope = serviceProvider.CreateScope();
-        AppDbContext dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-        return dbContext;
-    }*/
-
     public Task InitializeAsync() => _msSqlContainer.StartAsync();
 
     public new Task DisposeAsync() => _msSqlContainer.StopAsync();

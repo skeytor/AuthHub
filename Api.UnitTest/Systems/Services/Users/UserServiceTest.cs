@@ -13,15 +13,15 @@ namespace Api.UnitTest.Systems.Services.Users;
 
 public class UserServiceTest
 {
-    [Theory, ClassData(typeof(UserListValidTestData))]
-    public async Task GetAllAsync_Should_ReturnUserList_WhenUsersExist(IReadOnlyList<User> usersExpected)
+    [Theory, ClassData(typeof(ValidUserListTestData))]
+    public async Task GetAllAsync_Should_ReturnUserList_WhenUsersExist(IReadOnlyList<User> expected)
     {
         // Arrange
         Mock<IUserRepository> mockUserRepository = new();
 
         mockUserRepository
             .Setup(repository => repository.GetAllAsync())
-            .ReturnsAsync(usersExpected)
+            .ReturnsAsync(expected)
             .Verifiable(Times.Once());
         UserService userService = new(mockUserRepository.Object, default!, default!);
 
@@ -40,22 +40,22 @@ public class UserServiceTest
             .Should()
             .NotBeEmpty()
             .And
-            .HaveSameCount(usersExpected);
+            .HaveSameCount(expected);
     }
 
-    [Theory, ClassData(typeof(CreateUserValidTestData))]
+    [Theory, ClassData(typeof(ValidCreateUserTestData))]
     public async Task CreateAsync_Should_ReturnId_WhenUserDoesNotExist(
-        CreateUserRequest request)
+        CreateUserRequest input)
     {
         // Arrange
         User expected = new()
         {
             Id = Guid.NewGuid(),
-            FirstName = request.FirstName,
-            LastName = request.LastName,
-            Username = request.UserName,
-            Email = request.Email,
-            RoleId = request.RoleId,
+            FirstName = input.FirstName,
+            LastName = input.LastName,
+            Username = input.UserName,
+            Email = input.Email,
+            RoleId = input.RoleId,
             IsActive = true
         };
 
@@ -64,7 +64,7 @@ public class UserServiceTest
         Mock<IPasswordHasher<User>> mockPasswordHasher = new();
 
         mockPasswordHasher.Setup(provider =>
-                provider.HashPassword(It.IsAny<User>(), request.Password))
+                provider.HashPassword(It.IsAny<User>(), input.Password))
             .Returns(It.IsAny<string>())
             .Verifiable(Times.Once());
 
@@ -93,7 +93,7 @@ public class UserServiceTest
             mockPasswordHasher.Object);
 
         // Act
-        var result = await userService.CreateAsync(request);
+        var result = await userService.CreateAsync(input);
 
         // Assert
         mockUserRepository.Verify();
@@ -112,20 +112,20 @@ public class UserServiceTest
             .Be(expected.Id);
     }
 
-    [Theory, ClassData(typeof(CreateUserValidTestData))]
+    [Theory, ClassData(typeof(ValidCreateUserTestData))]
     public async Task CreateAsync_Should_ReturnErrorFailure_WhenUserExists(
-        CreateUserRequest request)
+        CreateUserRequest input)
     {
         // Arrange
         User expected = new()
         {
             Id = Guid.NewGuid(),
-            FirstName = request.FirstName,
-            LastName = request.LastName,
-            Username = request.UserName,
-            Email = request.Email,
-            Password = request.Password,
-            RoleId = request.RoleId,
+            FirstName = input.FirstName,
+            LastName = input.LastName,
+            Username = input.UserName,
+            Email = input.Email,
+            Password = input.Password,
+            RoleId = input.RoleId,
             IsActive = true
         };
         Mock<IUserRepository> mockUserRepository = new();
@@ -149,7 +149,7 @@ public class UserServiceTest
         UserService userService = new(mockUserRepository.Object, mockUnitOfWork.Object, default!);
 
         // Act
-        var result = await userService.CreateAsync(request);
+        var result = await userService.CreateAsync(input);
 
         // Assert
         mockUserRepository.Verify();
@@ -162,14 +162,14 @@ public class UserServiceTest
             .Be(ErrorType.Conflict);
     }
 
-    [Theory, ClassData(typeof(UserGuidValidTestData))]
-    public async Task GetUserById_Should_ReturnUser_WhenUserExists(Guid id, User userExpected)
+    [Theory, ClassData(typeof(ValidUserTestData))]
+    public async Task GetUserById_Should_ReturnUser_WhenUserExists(Guid id, User expected)
     {
         // Arrange
         Mock<IUserRepository> mockUserRepository = new();
         mockUserRepository
             .Setup(repo => repo.GetByIdAsync(id))
-            .ReturnsAsync(userExpected)
+            .ReturnsAsync(expected)
             .Verifiable(Times.Once());
         UserService userService = new(mockUserRepository.Object, default!, default!);
 
@@ -189,17 +189,18 @@ public class UserServiceTest
             .NotBeNull();
         result.Value.LastName
             .Should()
-            .Be(userExpected.LastName);
+            .Be(expected.LastName);
     }
 
-    [Theory, ClassData(typeof(UserGuidInvalidTestData))]
-    public async Task GetUserById_Should_ReturnErrorFailure_WhenUserDoesNotExist(Guid id, User userExpected)
+    [Theory, ClassData(typeof(InvalidUserTestData))]
+    public async Task GetUserById_Should_ReturnErrorFailure_WhenUserDoesNotExist(
+        Guid id, User expected)
     {
         // Arrange
         Mock<IUserRepository> mockUserRepository = new();
         mockUserRepository
             .Setup(repo => repo.GetByIdAsync(id))
-            .ReturnsAsync(userExpected)
+            .ReturnsAsync(expected)
             .Verifiable(Times.Once());
         UserService userService = new(mockUserRepository.Object, default!, default!);
 
@@ -216,44 +217,38 @@ public class UserServiceTest
             .Be(ErrorType.NotFound);
     }
 
-    [Fact]
-    public async Task Update_Should_ReturnUserId_WhenUserExists()
+    [Theory, ClassData(typeof(ValidUpdateUserTestData))]
+    public async Task Update_Should_ReturnUserId_WhenUserExists(
+        CreateUserRequest input, User userToUpdate)
     {
         // Arrange
-        Guid id = Guid.NewGuid();
-        User userRecord = new()
+        Guid userId = userToUpdate.Id;
+        User expectedResult = new()
         {
-            Id = id,
-            Username = "username",
-            FirstName = "Example",
-            LastName = "Example",
-            Email = "example@email.com",
-            Password = "password",
+            Id = userId,
+            Username = input.UserName,
+            FirstName = input.FirstName,
+            LastName = input.LastName,
+            Email = input.Email,
+            Password = input.Password,
             IsActive = true,
-            RoleId = 1
+            RoleId = input.RoleId,
         };
-        CreateUserRequest request = new(
-            "Name changed",
-            "Last name changed",
-            "Username changed",
-            "example_changed@email.com",
-            "Pas12Changed",
-            RoleId: 4);
 
         Mock<IUserRepository> mockUserRepository = new();
         Mock<IUnitOfWork> mockUnitOfWork = new();
         PasswordHasher<User> passwordHasher = new();
-        mockUserRepository.Setup(repo => repo.GetByIdAsync(id))
-            .ReturnsAsync(userRecord)
+        mockUserRepository.Setup(repo => repo.GetByIdAsync(userId))
+            .ReturnsAsync(userToUpdate)
             .Verifiable(Times.Once());
 
         mockUserRepository.Setup(repo =>
                 repo.EmailExistsAsync(It.IsAny<string>()))
-            .ReturnsAsync(true)
+            .ReturnsAsync(false)
             .Verifiable(Times.Once());
 
         mockUserRepository.Setup(repo => repo.UserNameExistsAsync(It.IsAny<string>()))
-            .ReturnsAsync(true)
+            .ReturnsAsync(false)
             .Verifiable(Times.Once());
 
         mockUnitOfWork
@@ -261,16 +256,19 @@ public class UserServiceTest
             .ReturnsAsync(1)
             .Verifiable(Times.Once()); // A row affected
 
-        UserService userService = new(mockUserRepository.Object, mockUnitOfWork.Object, passwordHasher);
+        UserService userService = new(
+            mockUserRepository.Object, 
+            mockUnitOfWork.Object, 
+            passwordHasher);
 
         // Act
-        var result = await userService.Update(id, request);
+        var result = await userService.Update(userId, input);
 
         // Assert
         mockUserRepository.Verify();
         mockUnitOfWork.Verify();
         result.IsSuccess.Should().BeTrue();
-        result.Value.Should().Be(id);
+        result.Value.Should().NotBeEmpty().And.Be(userId);
 
     }
 }

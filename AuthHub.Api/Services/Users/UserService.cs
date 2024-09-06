@@ -33,11 +33,9 @@ public sealed class UserService(
             RoleId = request.RoleId
         };
         user.Password = passwordHasher.HashPassword(user, request.Password);
-        var guid = await userRepository
-            .InsertAsync(user)
-            .ContinueWith(s => s.Result.Id);
+        var userCreated = await userRepository.InsertAsync(user);
         await unitOfWork.SaveChangesAsync();
-        return guid;
+        return userCreated.Id;
     }
 
     public async Task<Result<IReadOnlyList<UserResponse>>> GetAllAsync()
@@ -69,12 +67,12 @@ public sealed class UserService(
             return Result.Failure<Guid>(
                 Error.NotFound("User.Id", $"User with ID: {id} was not found"));
         }
-        if (!await userRepository.EmailExistsAsync(user.Email)) 
+        if (await userRepository.EmailExistsAsync(user.Email)) 
         {
             return Result.Failure<Guid>(
                 Error.Conflict("User.Email", $"Email: {request.Email} is already"));
         }
-        if (!await userRepository.UserNameExistsAsync(user.Username))
+        if (await userRepository.UserNameExistsAsync(user.Username))
         {
             return Result.Failure<Guid>(
                         Error.NotFound("User.Username", $"Userbane: {request.UserName} is already"));

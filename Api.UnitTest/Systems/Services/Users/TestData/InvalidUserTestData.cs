@@ -2,9 +2,9 @@
 
 namespace Api.UnitTest.Systems.Services.Users.TestData;
 
-public class UserGuidInvalidTestData : TheoryData<Guid, User?>
+internal class InvalidUserTestData : TheoryData<Guid, User?>
 {
-    public UserGuidInvalidTestData()
+    public InvalidUserTestData()
     {
         Add(Guid.NewGuid(), null);
         Add(Guid.NewGuid(), null);

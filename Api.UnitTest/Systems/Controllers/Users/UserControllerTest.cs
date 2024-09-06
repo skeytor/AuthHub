@@ -2,7 +2,6 @@
 using AuthHub.Api.Controllers;
 using AuthHub.Api.Dtos;
 using AuthHub.Api.Services.Users;
-using Azure.Core;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -13,15 +12,15 @@ namespace Api.UnitTest.Systems.Controllers.Users;
 public class UserControllerTest
 {
 
-    [Theory, ClassData(typeof(UserResponseListValidTestData))]
-    public async Task GetAll_Should_ReturnUserResponseList_WhenUsersExist(
-        List<UserResponse> usersExpected)
+    [Theory, ClassData(typeof(ValidUserResponseListTestData))]
+    public async Task GetAll_Should_ReturnUserList_WhenUsersExist(
+        List<UserResponse> expectedResult)
     {
         // Arrange
         var mockUserService = new Mock<IUserService>();
         mockUserService
             .Setup(service => service.GetAllAsync())
-            .ReturnsAsync(usersExpected)
+            .ReturnsAsync(expectedResult)
             .Verifiable(Times.Once());
         UserController userController = new(mockUserService.Object);
 
@@ -47,25 +46,25 @@ public class UserControllerTest
             .Should()
             .NotBeEmpty()
             .And
-            .HaveSameCount(usersExpected);
+            .HaveSameCount(expectedResult);
     }
 
 
     [Theory, ClassData(typeof(UserControllerCreateUserValidTestData))]
     public async Task Create_Should_ReturnUserId_WhenRequestDataIsValid(
-        CreateUserRequest request, Guid idExpected)
+        CreateUserRequest input, Guid expectedResult)
     {
         // Arrange
         var mockUserService = new Mock<IUserService>();
         mockUserService
-            .Setup(service => service.CreateAsync(request))
-            .ReturnsAsync(idExpected)
+            .Setup(service => service.CreateAsync(input))
+            .ReturnsAsync(expectedResult)
             .Verifiable(Times.Once());
 
         UserController userController = new(mockUserService.Object);
 
         // Act
-        var sutActionResult = await userController.Create(request);
+        var sutActionResult = await userController.Create(input);
 
         // Assert
         mockUserService.Verify();
@@ -87,14 +86,14 @@ public class UserControllerTest
             .NotBeEmpty();
     }
 
-    [Theory, ClassData(typeof(UserControllerUserResponseGuidValidTestData))]
-    public async Task GetById_Should_ReturnUser_WhenUserExists(Guid id, UserResponse expected)
+    [Theory, ClassData(typeof(UserControllerUserResponseValidTestData))]
+    public async Task GetById_Should_ReturnUser_WhenUserExists(Guid id, UserResponse expectedResult)
     {
         // Arrange
         Mock<IUserService> userServiceMock = new();
         userServiceMock
             .Setup(service => service.GetByIdAsync(id))
-            .ReturnsAsync(expected)
+            .ReturnsAsync(expectedResult)
             .Verifiable(Times.Once());
         UserController userController = new(userServiceMock.Object);
 
