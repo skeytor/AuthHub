@@ -12,6 +12,6 @@ public abstract class BaseTest : IClassFixture<MsSqlContainerFixture>
     {
         Context = TestHelper.GetDbContext(fixture.ConnectionString);
         Context.Database.EnsureCreated();
-        SampleDataInitializer.SeedData(Context);
+        DataInitializer.ClearAndReseedDatabase(Context);
     }
 }

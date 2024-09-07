@@ -10,6 +10,12 @@ using Testcontainers.MsSql;
 namespace AuthHub.Api.IntegrationTest;
 
 // Program.cs is internal default
+/// <summary>
+/// A custom <see cref="IntegrationTestWebApplicationFactory{TProgram}"/> for integration testing,
+/// using a SQL Server container to provide a database enviroment.
+/// Implements <see cref="IAsyncLifetime"/> to manage container lifecycle during the test.
+/// </summary>
+/// <typeparam name="TProgram">The entry point of the web application (usually the Program class).</typeparam>
 public class IntegrationTestWebApplicationFactory<TProgram>
     : WebApplicationFactory<TProgram>, IAsyncLifetime
     where TProgram : class

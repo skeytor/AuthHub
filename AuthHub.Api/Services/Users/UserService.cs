@@ -7,6 +7,12 @@ using Microsoft.AspNetCore.Identity;
 
 namespace AuthHub.Api.Services.Users;
 
+/// <summary>
+/// Implements <see cref="IUserService"/> interface to handle user-related operations.
+/// </summary>
+/// <param name="userRepository">The repository to handle user data access.</param>
+/// <param name="unitOfWork">The unit of work for committing database changes.</param>
+/// <param name="passwordHasher">The standard service for hashing user passwords.</param>
 public sealed class UserService(
     IUserRepository userRepository,
     IUnitOfWork unitOfWork,
