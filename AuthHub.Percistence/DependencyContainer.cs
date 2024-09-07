@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace AuthHub.Persistence;
 
-public static class DependencyInjection
+public static class DependencyContainer
 {
     private const string _connectionName = "Default";
     public static IServiceCollection AddRepositories(

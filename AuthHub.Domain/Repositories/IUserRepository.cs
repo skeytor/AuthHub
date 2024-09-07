@@ -3,9 +3,11 @@
 namespace AuthHub.Domain.Repositories;
 public interface IUserRepository
 {
-    Task<User> CreateAsync(User user);
+    Task<User> InsertAsync(User user);
     Task<User?> GetByIdAsync(Guid id);
-    Task<IReadOnlyCollection<User>> GetAllAsync();
+    Task<IReadOnlyList<User>> GetAllAsync();
     Task<User?> GetByUserNameAsync(string userName);
-    Task<bool> ExistAsync(string email);
+    Task<bool> EmailExistsAsync(string email);
+    Task<bool> UserNameExistsAsync(string userName);
+    void Update(User user);
 }

@@ -25,6 +25,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IntegrationTests", "Integra
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuthHub.Api.IntegrationTest", "AuthHub.Api.IntegrationTest\AuthHub.Api.IntegrationTest.csproj", "{0D3114C7-2901-4DD3-9D5B-537761ED3197}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "App.Persistence.IntegrationTest", "App.Persistence.IntegrationTest\App.Persistence.IntegrationTest.csproj", "{54B525DD-174B-4F5A-936B-E7AAC38E8538}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +57,10 @@ Global
 		{0D3114C7-2901-4DD3-9D5B-537761ED3197}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0D3114C7-2901-4DD3-9D5B-537761ED3197}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0D3114C7-2901-4DD3-9D5B-537761ED3197}.Release|Any CPU.Build.0 = Release|Any CPU
+		{54B525DD-174B-4F5A-936B-E7AAC38E8538}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{54B525DD-174B-4F5A-936B-E7AAC38E8538}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{54B525DD-174B-4F5A-936B-E7AAC38E8538}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{54B525DD-174B-4F5A-936B-E7AAC38E8538}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -69,6 +75,7 @@ Global
 		{575553C0-C5C8-49F7-9490-FF3F10614FB0} = {262FAFD7-EFF8-4C23-A8AE-E9CC43EFEBA6}
 		{93DD78D9-957E-4A03-966D-1A4B22991C75} = {262FAFD7-EFF8-4C23-A8AE-E9CC43EFEBA6}
 		{0D3114C7-2901-4DD3-9D5B-537761ED3197} = {93DD78D9-957E-4A03-966D-1A4B22991C75}
+		{54B525DD-174B-4F5A-936B-E7AAC38E8538} = {93DD78D9-957E-4A03-966D-1A4B22991C75}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C3113522-0D25-4A56-88CA-9490F7BA2CC4}
