@@ -4,6 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>8d762053-e570-4efb-bc8a-fa85340d5fb9</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AuthHub.Infrastructure\AuthHub.Infrastructure.csproj" />
     <ProjectReference Include="..\AuthHub.Percistence\AuthHub.Persistence.csproj" />
   </ItemGroup>
 	<ItemGroup>

@@ -1,10 +1,11 @@
 ﻿using AuthHub.Api.Dtos;
 using AuthHub.Api.IntegrationTest.Fixtures;
+using AuthHub.Infrastructure.Authentication;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Http.Json;
 
-namespace AuthHub.Api.IntegrationTest.Controllers;
+namespace AuthHub.Api.IntegrationTest.Systems.Controllers;
 
 [Collection(nameof(WebApplicationCollectionFixture))]
 public class UserControllerTests(IntegrationTestWebApplicationFactory<Program> factory)
@@ -84,8 +85,8 @@ public class UserControllerTests(IntegrationTestWebApplicationFactory<Program> f
     public async Task GetById_Should_ReturnUserSuccess_WhenUserExists()
     {
         // Arrange
-        
-        
+
+
         // Act
         HttpResponseMessage response = await _httpClient.GetAsync($"/api/user/{1}");
 
@@ -112,7 +113,7 @@ public class UserControllerTests(IntegrationTestWebApplicationFactory<Program> f
         HttpResponseMessage response = await _httpClient.PutAsJsonAsync(
             $"/api/user/{1}",
             request);
-        
+
         // Assert
         response.EnsureSuccessStatusCode();
         response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
