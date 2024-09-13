@@ -29,13 +29,13 @@ public sealed class UserRepository(IAppDbContext context)
     public async Task<User?> GetByUserNameAsync(string userName) => await
             _Context
             .Users
-            .FindAsync(userName);
+            .FirstOrDefaultAsync(u => u.Username == userName);
 
-    public async Task<bool> EmailExistsAsync(string email) => !await _Context
+    public async Task<bool> EmailExistsAsync(string email) => await _Context
             .Users
             .AnyAsync(u => u.Email == email);
 
-    public async Task<bool> UserNameExistsAsync(string userName) => !await _Context
+    public async Task<bool> UserNameExistsAsync(string userName) => await _Context
             .Users
             .AnyAsync(u => u.Username == userName);
 

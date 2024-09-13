@@ -10,4 +10,5 @@
 public abstract class BaseWebApplicationTest(IntegrationTestWebApplicationFactory<Program> factory)
 {
     protected readonly HttpClient _httpClient = factory.CreateClient();
+    protected readonly IntegrationTestWebApplicationFactory<Program> _factory = factory;
 }

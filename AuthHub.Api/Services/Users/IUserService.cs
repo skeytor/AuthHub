@@ -4,7 +4,7 @@ using AuthHub.Domain.Results;
 namespace AuthHub.Api.Services.Users;
 
 /// <summary>
-/// Defines a contract that defines the operations
+/// Defines a contract that defines user operations.
 /// </summary>
 public interface IUserService
 {

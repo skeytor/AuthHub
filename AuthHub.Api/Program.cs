@@ -1,4 +1,7 @@
 using AuthHub.Api.Extensions;
+using AuthHub.Api.OptionsSetup;
+using AuthHub.Infrastructure.Authentication;
+using AuthHub.Infrastructure.Extensions;
 using AuthHub.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +19,11 @@ builder.Services.AddRepositories(builder.Configuration);
 // Add app services
 builder.Services.AddAppServices();
 
+builder.Services
+    .ConfigureOptions<OptionsTokenSetup>();
+
+builder.Services.AddAuthenticationProvider();
+//
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

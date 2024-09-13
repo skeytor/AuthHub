@@ -1,0 +1,33 @@
+﻿using AuthHub.Api.Dtos;
+using AuthHub.Domain.Entities;
+using AuthHub.Domain.Repositories;
+using AuthHub.Domain.Results;
+using AuthHub.Infrastructure.Authentication;
+using Microsoft.AspNetCore.Authentication.BearerToken;
+using Microsoft.AspNetCore.Identity;
+
+namespace AuthHub.Api.Services.Auth;
+
+public class AuthenticationService(
+    IUserRepository userRepository,
+    ITokenProvider tokenProvider,
+    IPasswordHasher<User> passwordHasher) : IAuthenticationService
+{
+    public async Task<Result<AccessTokenResponse>> AuthenticateAsync(LoginRequest request)
+    {
+        var user = await userRepository.GetByUserNameAsync(request.UserName);
+        if (user is null)
+        {
+            return Result.Failure<AccessTokenResponse>(Error.NotFound("", ""));
+        }
+        PasswordVerificationResult verificationResult = passwordHasher
+            .VerifyHashedPassword(user, user.Password, request.Password);
+        
+        if (verificationResult is PasswordVerificationResult.Failed)
+        {
+            return Result.Failure<AccessTokenResponse>(Error.Validation("", ""));
+        }
+        AccessTokenResponse tokenResponse = tokenProvider.GetAccesToken(user);
+        return tokenResponse;
+    }
+}
