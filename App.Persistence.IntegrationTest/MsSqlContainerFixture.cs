@@ -3,7 +3,7 @@
 namespace App.Persistence.IntegrationTest;
 
 
-public sealed class MsSqlContainerFixture : IAsyncLifetime
+public class MsSqlContainerFixture : IAsyncLifetime
 {
     private readonly MsSqlContainer _msSqlContainer = new MsSqlBuilder()
         .WithImage("mcr.microsoft.com/mssql/server:2022-latest")

@@ -18,7 +18,7 @@ public sealed class UserService(
     IUnitOfWork unitOfWork,
     IPasswordHasher<User> passwordHasher) : IUserService
 {
-    public async Task<Result<Guid>> CreateAsync(CreateUserRequest request)
+    public async Task<Result<Guid>> RegisterAsync(CreateUserRequest request)
     {
         if (await userRepository.EmailExistsAsync(request.Email))
         {

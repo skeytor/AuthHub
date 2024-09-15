@@ -57,14 +57,14 @@ public class UserControllerTest
         // Arrange
         var mockUserService = new Mock<IUserService>();
         mockUserService
-            .Setup(service => service.CreateAsync(input))
+            .Setup(service => service.RegisterAsync(input))
             .ReturnsAsync(expectedResult)
             .Verifiable(Times.Once());
 
         UserController userController = new(mockUserService.Object);
 
         // Act
-        var sutActionResult = await userController.Create(input);
+        var sutActionResult = await userController.Register(input);
 
         // Assert
         mockUserService.Verify();
