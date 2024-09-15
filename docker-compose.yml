@@ -1,0 +1,32 @@
+services:
+  authhub.api:
+    image: ${DOCKER_REGISTRY-}authhubapi
+    build:
+      context: .
+      dockerfile: AuthHub.Api/Dockerfile
+    depends_on:
+      - authhub.database
+
+  authhub.database:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: authhub.database
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=P@ssword123
+    volumes:
+      - sqlserverdata:/var/opt/mssql
+    ports:
+      - "1433:1433"
+
+  nginx:
+    build:
+      context: './nginx'
+      dockerfile: Dockerfile
+    ports:
+      - 80:80
+    restart: unless-stopped
+    depends_on:
+      - authhub.api
+
+volumes:
+  sqlserverdata:

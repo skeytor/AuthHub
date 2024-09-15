@@ -1,8 +1,7 @@
 using AuthHub.Api.Extensions;
 using AuthHub.Api.OptionsSetup;
-using AuthHub.Infrastructure.Authentication;
 using AuthHub.Infrastructure.Extensions;
-using AuthHub.Persistence;
+using AuthHub.Persistence.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
