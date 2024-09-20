@@ -1,9 +1,12 @@
 ﻿using AuthHub.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Xunit.Abstractions;
 
 namespace App.Persistence.IntegrationTest.Repositories;
 
-public class UseRepositoryTest(MsSqlContainerFixture fixture) : BaseTest(fixture)
+public class UseRepositoryTest(
+    MsSqlContainerFixture fixture,
+    ITestOutputHelper outputHelper) : BaseTest(fixture, outputHelper)
 {
     [Fact]
     public async Task InsertAsync_Should_ReturnSuccess()

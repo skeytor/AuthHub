@@ -5,8 +5,9 @@ namespace AuthHub.Domain.Repositories
     public interface IRoleRepository
     {
         Task<IReadOnlyList<Role>> GetAllAsync();
-        Task<Role> CreateAsync(Role role);
-        Task<Role> GetByIdAsync(int id);
-        Task<IReadOnlyList<HashSet<Permission>>> GetPermissionsAsync(int roleId);
+        Task<Role> InsertAsync(Role role);
+        Task<Role?> GetByIdAsync(int id);
+        Task<IReadOnlySet<string>> GetPermissionsByUserIdAsync(Guid userId);
+        Task<bool> RoleExistsAsync(string roleName);
     }
 }

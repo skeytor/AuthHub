@@ -14,7 +14,7 @@ services:
       - ACCEPT_EULA=Y
       - MSSQL_SA_PASSWORD=P@ssword123
     volumes:
-      - sqlserverdata:/var/opt/mssql
+      - authhubdata:/var/opt/mssql
     ports:
       - "1433:1433"
 
@@ -29,4 +29,4 @@ services:
       - authhub.api
 
 volumes:
-  sqlserverdata:
+  authhubdata:
