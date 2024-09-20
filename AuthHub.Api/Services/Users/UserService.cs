@@ -73,12 +73,12 @@ public sealed class UserService(
             return Result.Failure<Guid>(
                 Error.NotFound("User.Id", $"User with ID: {id} was not found"));
         }
-        if (await userRepository.EmailExistsAsync(user.Email)) 
+        if (await userRepository.EmailExistsAsync(request.Email)) 
         {
             return Result.Failure<Guid>(
                 Error.Conflict("User.Email", $"Email: {request.Email} is already"));
         }
-        if (await userRepository.UserNameExistsAsync(user.Username))
+        if (await userRepository.UserNameExistsAsync(request.UserName))
         {
             return Result.Failure<Guid>(
                         Error.NotFound("User.Username", $"Userbane: {request.UserName} is already"));
