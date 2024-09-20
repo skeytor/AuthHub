@@ -1,4 +1,5 @@
-﻿using AuthHub.Api.Dtos;
+﻿using AuthHub.Api.Controllers;
+using AuthHub.Api.Dtos;
 using AuthHub.Api.Services.Roles;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
@@ -28,10 +29,12 @@ public class RoleControllerTest
 
         // Assert
         mockRoleService.Verify();
-        response.Should().BeOfType<OkObjectResult>();
-        var objResult = response.Value as OkObjectResult;
-        objResult.StatusCode.Should().Be(StatusCodes.Status200OK);
+        response.Should().BeOfType<CreatedAtActionResult>();
+
+        var objResult = (CreatedAtActionResult)response;
+        objResult.StatusCode.Should().Be(StatusCodes.Status201Created);
         objResult.Value.Should().BeOfType<string>();
+        
         string roleName = (string)objResult.Value!;
         roleName.Should().Be(request.Name);
     }
@@ -60,12 +63,14 @@ public class RoleControllerTest
         // Assert
         mockRoleService.Verify();
         response.Should().BeOfType<OkObjectResult>();
-        var objResult = response.Value as OkObjectResult;
+
+        var objResult = (OkObjectResult)response;
         objResult.StatusCode.Should().Be(StatusCodes.Status200OK);
         objResult.Value.Should().BeAssignableTo<IReadOnlyList<RoleResponse>>();
         
         IReadOnlyList<RoleResponse> roles = (IReadOnlyList<RoleResponse>)objResult.Value!;
         roles.Should().NotBeNullOrEmpty();
+        roles.Should().HaveSameCount(rolesExpected);
 
     }
 }
