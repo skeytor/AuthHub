@@ -1,14 +1,11 @@
-﻿using AuthHub.Infrastructure.Authentication;
+﻿using AuthHub.Api.IntegrationTest.Initialization;
 using AuthHub.Persistence;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Options;
 using Testcontainers.MsSql;
 
 namespace AuthHub.Api.IntegrationTest;
@@ -33,9 +30,16 @@ public class IntegrationTestWebApplicationFactory<TProgram>
         {
             services.RemoveAll<DbContextOptions<AppDbContext>>();
             services.AddSqlServer<AppDbContext>(_msSqlContainer.GetConnectionString());
+            SeedDatabase(services);
         });
+    }
+    private static void SeedDatabase(IServiceCollection services)
+    {
+        using IServiceScope scope = services.BuildServiceProvider().CreateScope();
+        AppDbContext context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        SampleDataInitializer.ClearAndReseedDatabase(context);
     }
     public Task InitializeAsync() => _msSqlContainer.StartAsync();
 
-    public new Task DisposeAsync() => _msSqlContainer.StopAsync();
+    public new Task DisposeAsync() => _msSqlContainer.DisposeAsync().AsTask();
 }

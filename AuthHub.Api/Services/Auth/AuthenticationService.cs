@@ -20,10 +20,10 @@ public class AuthenticationService(
         {
             return Result.Failure<AccessTokenResponse>(Error.NotFound("", ""));
         }
-        PasswordVerificationResult verificationResult = passwordHasher
+        PasswordVerificationResult passwordVerification = passwordHasher
             .VerifyHashedPassword(user, user.Password, request.Password);
         
-        if (verificationResult is PasswordVerificationResult.Failed)
+        if (passwordVerification is PasswordVerificationResult.Failed)
         {
             return Result.Failure<AccessTokenResponse>(Error.Validation("", ""));
         }

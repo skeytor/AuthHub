@@ -93,7 +93,7 @@ public class UserServiceTest
             mockPasswordHasher.Object);
 
         // Act
-        var result = await userService.CreateAsync(input);
+        var result = await userService.RegisterAsync(input);
 
         // Assert
         mockUserRepository.Verify();
@@ -149,7 +149,7 @@ public class UserServiceTest
         UserService userService = new(mockUserRepository.Object, mockUnitOfWork.Object, default!);
 
         // Act
-        var result = await userService.CreateAsync(input);
+        var result = await userService.RegisterAsync(input);
 
         // Assert
         mockUserRepository.Verify();

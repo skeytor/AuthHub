@@ -9,7 +9,7 @@ namespace AuthHub.Api.Services.Users;
 public interface IUserService
 {
     Task<Result<IReadOnlyList<UserResponse>>> GetAllAsync();
-    Task<Result<Guid>> CreateAsync(CreateUserRequest request);
+    Task<Result<Guid>> RegisterAsync(CreateUserRequest request);
     Task<Result<UserResponse>> GetByIdAsync(Guid id);
     Task<Result<Guid>> Update(Guid id, CreateUserRequest request);
 }

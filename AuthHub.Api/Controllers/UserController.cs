@@ -40,9 +40,9 @@ public sealed class UserController(
     }
 
     [HttpPost, ProducesResponseType<Guid>(StatusCodes.Status201Created), ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Create([FromBody] CreateUserRequest request)
+    public async Task<IActionResult> Register([FromBody] CreateUserRequest request)
     {
-        var result = await userService.CreateAsync(request);
+        var result = await userService.RegisterAsync(request);
         return result.IsSuccess
             ? CreatedAtAction(nameof(GetAll), result.Value)
             : BadRequest();
