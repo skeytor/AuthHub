@@ -31,6 +31,7 @@ public class IntegrationTestWebApplicationFactory<TProgram>
             services.RemoveAll<DbContextOptions<AppDbContext>>();
             services.AddSqlServer<AppDbContext>(_msSqlContainer.GetConnectionString());
         });
+        builder.UseEnvironment("Development");
     }
     public Task InitializeAsync() => _msSqlContainer.StartAsync();
 

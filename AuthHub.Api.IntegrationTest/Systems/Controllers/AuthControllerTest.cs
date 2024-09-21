@@ -4,12 +4,15 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Authentication.BearerToken;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Json;
+using Xunit.Abstractions;
 
 namespace AuthHub.Api.IntegrationTest.Systems.Controllers;
 
 [Collection(nameof(WebApplicationCollectionFixture))]
-public class AuthControllerTest(IntegrationTestWebApplicationFactory<Program> fixture)
-    : BaseWebApplicationTest(fixture)
+public class AuthControllerTest(
+    IntegrationTestWebApplicationFactory<Program> fixture,
+    ITestOutputHelper outputHelper)
+    : BaseWebApplicationTest(fixture, outputHelper)
 {
     [Fact]
     public async Task GetAccessToken_Should_ReturnSuccess_WhenCredentialsAreValidAndUserExists()

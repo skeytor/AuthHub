@@ -1,6 +1,7 @@
 ﻿using AuthHub.Api.IntegrationTest.Initialization;
 using AuthHub.Persistence;
 using Microsoft.Extensions.DependencyInjection;
+using Xunit.Abstractions;
 
 namespace AuthHub.Api.IntegrationTest;
 
@@ -19,10 +20,14 @@ public abstract class BaseWebApplicationTest
 {
     protected readonly HttpClient _httpClient;
     protected readonly IntegrationTestWebApplicationFactory<Program> _factory;
-    protected BaseWebApplicationTest(IntegrationTestWebApplicationFactory<Program> factory)
+    protected readonly ITestOutputHelper _testOutputHelper;
+    protected BaseWebApplicationTest(
+        IntegrationTestWebApplicationFactory<Program> factory, 
+        ITestOutputHelper testOutputHelper)
     {
         _httpClient = factory.CreateClient();
         _factory = factory;
+        _testOutputHelper = testOutputHelper;
         DataInitializer();
     }
 

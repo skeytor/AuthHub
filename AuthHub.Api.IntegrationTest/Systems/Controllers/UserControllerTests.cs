@@ -5,12 +5,15 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net.Http.Json;
+using Xunit.Abstractions;
 
 namespace AuthHub.Api.IntegrationTest.Systems.Controllers;
 
 [Collection(nameof(WebApplicationCollectionFixture))]
-public class UserControllerTests(IntegrationTestWebApplicationFactory<Program> factory)
-    : BaseWebApplicationTest(factory)
+public class UserControllerTests(
+    IntegrationTestWebApplicationFactory<Program> factory,
+    ITestOutputHelper outputHelper)
+    : BaseWebApplicationTest(factory, outputHelper)
 {
     [Fact]
     public async Task GetAllUsers_Should_ReturnSuccess()

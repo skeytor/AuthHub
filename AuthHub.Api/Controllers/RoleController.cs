@@ -12,12 +12,19 @@ namespace AuthHub.Api.Controllers;
 [ApiController]
 public class RoleController(IRoleService roleService) : ControllerBase
 {
+    /// <summary>
+    /// Retrieves all roles in the system
+    /// </summary>
+    /// <returns>
+    /// An <see cref="IActionResult"/> with a list of <see cref="RoleResponse"/>/>
+    /// </returns>
     [HttpGet, ProducesResponseType<List<RoleResponse>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll()
     {
         var result = await roleService.GetAllAsync();
         return Ok(result.Value);
     }
+
     /// <summary>
     /// Creates a new role in the system.
     /// </summary>
@@ -25,6 +32,7 @@ public class RoleController(IRoleService roleService) : ControllerBase
     /// <returns>
     /// An <see cref="IActionResult"/> indicating whether the role was created successfully.
     /// Returns HTTP status 201 (Created) with the created role's name if it was successfully, or 404 (Bad Request)
+    /// if the creation was failure.
     /// </returns>
     [HttpPost, ProducesResponseType<string>(StatusCodes.Status201Created)]
     public async Task<IActionResult> Create([FromBody] CreateRoleRequest request)
