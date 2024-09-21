@@ -16,7 +16,6 @@ public class UserControllerTests(IntegrationTestWebApplicationFactory<Program> f
     public async Task GetAllUsers_Should_ReturnSuccess()
     {
         // Arrange
-
         // Act
         HttpResponseMessage response = await _httpClient.GetAsync("/api/user");
 
@@ -96,6 +95,7 @@ public class UserControllerTests(IntegrationTestWebApplicationFactory<Program> f
             .OrderBy(x => Guid.NewGuid())
             .Select(x => x.Id)
             .FirstOrDefault();
+
         // Act
         HttpResponseMessage response = await _httpClient.GetAsync($"/api/user/{userId}");
 

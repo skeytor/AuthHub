@@ -1,8 +1,6 @@
 ﻿using AuthHub.Api.Dtos;
 using AuthHub.Api.Services.Users;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace AuthHub.Api.Controllers;
 
@@ -15,7 +13,7 @@ namespace AuthHub.Api.Controllers;
 public sealed class UserController(
     IUserService userService) : ControllerBase
 {
-    [HttpGet("me"), ProducesResponseType<UserResponse>(StatusCodes.Status200OK), ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [HttpGet("me"), ProducesResponseType<UserResponse>(StatusCodes.Status200OK)]
     public async Task<IActionResult> Me()
     {
         //var claimValue = claims.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
@@ -30,7 +28,7 @@ public sealed class UserController(
         return BadRequest();
     }
 
-    [HttpGet, ProducesResponseType<List<UserResponse>>(StatusCodes.Status200OK), ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [HttpGet, ProducesResponseType<List<UserResponse>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll()
     {
         var result = await userService.GetAllAsync();
@@ -39,7 +37,7 @@ public sealed class UserController(
             : BadRequest();
     }
 
-    [HttpPost, ProducesResponseType<Guid>(StatusCodes.Status201Created), ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [HttpPost, ProducesResponseType<Guid>(StatusCodes.Status201Created)]
     public async Task<IActionResult> Register([FromBody] CreateUserRequest request)
     {
         var result = await userService.RegisterAsync(request);
@@ -48,7 +46,7 @@ public sealed class UserController(
             : BadRequest();
     }
 
-    [HttpGet("{id}"), ProducesResponseType<UserResponse>(StatusCodes.Status200OK), ProducesResponseType(StatusCodes.Status404NotFound)]
+    [HttpGet("{id}"), ProducesResponseType<UserResponse>(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetById([FromRoute] Guid id)
     {
         var result = await userService.GetByIdAsync(id);
@@ -57,7 +55,7 @@ public sealed class UserController(
             : NotFound();
     }
 
-    [HttpPut("{id}"), ProducesResponseType<Guid>(StatusCodes.Status200OK), ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [HttpPut("{id}"), ProducesResponseType<Guid>(StatusCodes.Status200OK)]
     public async Task<IActionResult> Update(
         [FromRoute] Guid id, CreateUserRequest request)
     {

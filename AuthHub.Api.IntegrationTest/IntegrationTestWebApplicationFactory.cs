@@ -30,14 +30,7 @@ public class IntegrationTestWebApplicationFactory<TProgram>
         {
             services.RemoveAll<DbContextOptions<AppDbContext>>();
             services.AddSqlServer<AppDbContext>(_msSqlContainer.GetConnectionString());
-            SeedDatabase(services);
         });
-    }
-    private static void SeedDatabase(IServiceCollection services)
-    {
-        using IServiceScope scope = services.BuildServiceProvider().CreateScope();
-        AppDbContext context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-        SampleDataInitializer.ClearAndReseedDatabase(context);
     }
     public Task InitializeAsync() => _msSqlContainer.StartAsync();
 

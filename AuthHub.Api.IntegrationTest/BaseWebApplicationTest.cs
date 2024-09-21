@@ -23,7 +23,7 @@ public abstract class BaseWebApplicationTest
     {
         _httpClient = factory.CreateClient();
         _factory = factory;
-        //DataInitializer();
+        DataInitializer();
     }
 
     /// <summary>

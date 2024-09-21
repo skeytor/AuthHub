@@ -4,18 +4,29 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AuthHub.Api.Controllers;
 
+/// <summary>
+/// API controller responsible for managing roles.
+/// </summary>
+/// <param name="roleService">The service responsible for handling business logic related to roles</param>
 [Route("api/[controller]")]
 [ApiController]
 public class RoleController(IRoleService roleService) : ControllerBase
 {
-    [HttpGet]
+    [HttpGet, ProducesResponseType<List<RoleResponse>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll()
     {
         var result = await roleService.GetAllAsync();
         return Ok(result.Value);
     }
-
-    [HttpPost]
+    /// <summary>
+    /// Creates a new role in the system.
+    /// </summary>
+    /// <param name="request">The data required to create a new role</param>
+    /// <returns>
+    /// An <see cref="IActionResult"/> indicating whether the role was created successfully.
+    /// Returns HTTP status 201 (Created) with the created role's name if it was successfully, or 404 (Bad Request)
+    /// </returns>
+    [HttpPost, ProducesResponseType<string>(StatusCodes.Status201Created)]
     public async Task<IActionResult> Create([FromBody] CreateRoleRequest request)
     {
         var result = await roleService.CreateAsync(request);
