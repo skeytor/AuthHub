@@ -40,8 +40,7 @@ public sealed class RoleRepository(IAppDbContext context)
             .ToHashSet();
     }
 
-    public Task<bool> RoleExistsAsync(string roleName)
-    {
-        throw new NotImplementedException();
-    }
+    public async Task<bool> RoleExistsAsync(string roleName) => await _Context
+            .Roles
+            .AnyAsync(x => x.Name == roleName);
 }

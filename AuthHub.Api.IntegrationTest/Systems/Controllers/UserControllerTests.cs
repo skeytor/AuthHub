@@ -5,18 +5,20 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net.Http.Json;
+using Xunit.Abstractions;
 
 namespace AuthHub.Api.IntegrationTest.Systems.Controllers;
 
 [Collection(nameof(WebApplicationCollectionFixture))]
-public class UserControllerTests(IntegrationTestWebApplicationFactory<Program> factory)
-    : BaseWebApplicationTest(factory)
+public class UserControllerTests(
+    IntegrationTestWebApplicationFactory<Program> factory,
+    ITestOutputHelper outputHelper)
+    : BaseWebApplicationTest(factory, outputHelper)
 {
     [Fact]
     public async Task GetAllUsers_Should_ReturnSuccess()
     {
         // Arrange
-
         // Act
         HttpResponseMessage response = await _httpClient.GetAsync("/api/user");
 
@@ -96,6 +98,7 @@ public class UserControllerTests(IntegrationTestWebApplicationFactory<Program> f
             .OrderBy(x => Guid.NewGuid())
             .Select(x => x.Id)
             .FirstOrDefault();
+
         // Act
         HttpResponseMessage response = await _httpClient.GetAsync($"/api/user/{userId}");
 
