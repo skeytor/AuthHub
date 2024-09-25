@@ -48,7 +48,7 @@ public class TokenProvider(IOptions<OptionsToken> options) : ITokenProvider
     }
     private static string GenerateRefreshToken()
     {
-        byte[] randomNumber = new byte[120];
+        byte[] randomNumber = new byte[60];
         using var rng = RandomNumberGenerator.Create();
         rng.GetBytes(randomNumber);
         return Convert.ToBase64String(randomNumber);

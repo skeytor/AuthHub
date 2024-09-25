@@ -20,6 +20,10 @@ public class AuthenticationService(
         {
             return Result.Failure<AccessTokenResponse>(Error.NotFound("", ""));
         }
+        if (!user.IsActive)
+        {
+            return Result.Failure<AccessTokenResponse>(Error.NotFound("", ""));
+        }
         PasswordVerificationResult passwordVerification = passwordHasher
             .VerifyHashedPassword(user, user.Password, request.Password);
         

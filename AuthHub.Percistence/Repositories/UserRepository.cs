@@ -40,4 +40,18 @@ public sealed class UserRepository(IAppDbContext context)
             .AnyAsync(u => u.Username == userName);
 
     public void Update(User user) => _Context.Users.Update(user);
+
+    public async Task<HashSet<string>> GetPermissions(Guid userId)
+    {
+        string[] permission = await _Context
+            .Users
+            .Include(x => x.Role)
+            .ThenInclude(x => x.Permissions)
+            .Where(x => x.Id == userId)
+            .Select(x => x.Role)
+            .SelectMany(x => x.Permissions)
+            .Select(x => x.Name)
+            .ToArrayAsync();
+        return [.. permission];
+    }
 }

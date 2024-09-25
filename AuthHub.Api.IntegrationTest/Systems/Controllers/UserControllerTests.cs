@@ -110,6 +110,19 @@ public class UserControllerTests(
     }
 
     [Fact]
+    public async Task GetProfileInformation_Should_ReturnUserInformation_WhenUserIsAuthenticated()
+    {
+        // Arrange
+        // Act
+        HttpResponseMessage response = await _httpClient.GetAsync($"/api/me");
+
+        // Assert
+        response.EnsureSuccessStatusCode();
+
+    }
+
+
+    [Fact]
     public async Task Update_Should_Return200StatusCode_WhenRequestDataIsValid()
     {
         // Arrange
