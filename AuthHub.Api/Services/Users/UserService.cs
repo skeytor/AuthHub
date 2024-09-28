@@ -36,6 +36,7 @@ public sealed class UserService(
             LastName = request.LastName,
             Username = request.UserName,
             Email = request.Email,
+            IsActive = true,
             RoleId = request.RoleId
         };
         user.Password = passwordHasher.HashPassword(user, request.Password);
@@ -46,17 +47,15 @@ public sealed class UserService(
 
     public async Task<Result<IReadOnlyList<UserResponse>>> GetAllAsync()
     {
-        var users = await userRepository.GetAllAsync();
-        IReadOnlyList<UserResponse> result = users
-            .Select(user => new UserResponse(user.Id, user.FirstName, user.LastName, user.Email))
-            .ToList()
-            .AsReadOnly();
-        return Result.Success(result);
+        IReadOnlyList<User> users = await userRepository.GetAllAsync();
+        return users
+            .Select(x => new UserResponse(x.Id, x.FirstName, x.LastName, x.Email))
+            .ToList();
     }
 
     public async Task<Result<UserResponse>> GetByIdAsync(Guid id)
     {
-        var user = await userRepository.GetByIdAsync(id);
+        User? user = await userRepository.GetByIdAsync(id);
         if (user is null)
         {
             return Result.Failure<UserResponse>(
@@ -67,7 +66,7 @@ public sealed class UserService(
 
     public async Task<Result<Guid>> Update(Guid id, CreateUserRequest request)
     {
-        var user = await userRepository.GetByIdAsync(id);
+        User? user = await userRepository.GetByIdAsync(id);
         if (user is null)
         {
             return Result.Failure<Guid>(

@@ -1,5 +1,6 @@
 ﻿using AuthHub.Api.Dtos;
 using AuthHub.Api.Services.Roles;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AuthHub.Api.Controllers;
@@ -10,6 +11,7 @@ namespace AuthHub.Api.Controllers;
 /// <param name="roleService">The service responsible for handling business logic related to roles</param>
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class RoleController(IRoleService roleService) : ControllerBase
 {
     /// <summary>

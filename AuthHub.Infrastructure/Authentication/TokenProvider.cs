@@ -19,7 +19,7 @@ public class TokenProvider(IOptions<OptionsToken> options) : ITokenProvider
             new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new(JwtRegisteredClaimNames.Email, user.Email),
             new(JwtRegisteredClaimNames.UniqueName, user.Username),
-            new(JwtRegisteredClaimNames.GivenName, user.LastName),
+            new(ClaimTypes.Role, user.Role.Name)
         ];
 
         SigningCredentials signingCredentials = new(
@@ -48,7 +48,7 @@ public class TokenProvider(IOptions<OptionsToken> options) : ITokenProvider
     }
     private static string GenerateRefreshToken()
     {
-        byte[] randomNumber = new byte[120];
+        byte[] randomNumber = new byte[60];
         using var rng = RandomNumberGenerator.Create();
         rng.GetBytes(randomNumber);
         return Convert.ToBase64String(randomNumber);

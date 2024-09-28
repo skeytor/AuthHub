@@ -1,6 +1,4 @@
 using AuthHub.Api.Extensions;
-using AuthHub.Api.OptionsSetup;
-using AuthHub.Infrastructure.Extensions;
 using AuthHub.Persistence.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,30 +6,34 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Add app repositories
+// Add app repositories to the container.
 builder.Services.AddRepositories(builder.Configuration);
 
-// Add app services
+// Add application services to the container.
 builder.Services.AddAppServices();
 
-builder.Services
-    .ConfigureOptions<OptionsTokenSetup>();
+// Add a custom authorization and authentication configuration to the container.
+builder.Services.AddAuthenticationAndAuthorization();
 
-builder.Services.AddAuthenticationProvider();
-//
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(option =>
+    {
+        option.EnablePersistAuthorization();
+    });
     app.ApplyMigrations();
 }
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

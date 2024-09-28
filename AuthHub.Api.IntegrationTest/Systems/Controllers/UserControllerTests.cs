@@ -84,7 +84,7 @@ public class UserControllerTests(
 
         var user = await context.Users.FindAsync(userId);
         user.Should().NotBeNull();
-        user.Id.Should().Be(userId);
+        user?.Id.Should().Be(userId);
         // check others properties if you want...
     }
 
@@ -108,6 +108,19 @@ public class UserControllerTests(
         UserResponse? data = await response.Content.ReadFromJsonAsync<UserResponse>();
         data.Should().NotBeNull();
     }
+
+    [Fact]
+    public async Task GetProfileInformation_Should_ReturnUserInformation_WhenUserIsAuthenticated()
+    {
+        // Arrange
+        // Act
+        HttpResponseMessage response = await _httpClient.GetAsync($"/api/user/me");
+
+        // Assert
+        response.EnsureSuccessStatusCode();
+
+    }
+
 
     [Fact]
     public async Task Update_Should_Return200StatusCode_WhenRequestDataIsValid()

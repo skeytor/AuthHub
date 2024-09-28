@@ -1,6 +1,8 @@
 ﻿using AuthHub.Api.Dtos;
 using AuthHub.Api.Services.Users;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace AuthHub.Api.Controllers;
 
@@ -10,15 +12,15 @@ namespace AuthHub.Api.Controllers;
 /// <param name="userService"></param>
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public sealed class UserController(
     IUserService userService) : ControllerBase
 {
     [HttpGet("me"), ProducesResponseType<UserResponse>(StatusCodes.Status200OK)]
     public async Task<IActionResult> Me()
     {
-        //var claimValue = claims.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
-        string claimValue = "";
-        if (Guid.TryParse(claimValue, out var userId)) 
+        string userIdClaimValue = User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
+        if (Guid.TryParse(userIdClaimValue, out var userId)) 
         { 
             var result = await userService.GetByIdAsync(userId);
             return result.IsSuccess
