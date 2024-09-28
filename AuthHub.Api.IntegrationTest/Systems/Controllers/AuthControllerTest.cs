@@ -39,7 +39,7 @@ public class AuthControllerTest(
     public async Task GetAccessToken_Should_ReturnError_WhenCredentialsAreInvalid()
     {
         // Arrange
-        LoginRequest request = new("invalid_username", "InvalidPassword12!");
+        LoginRequest request = new("invalid_username", "InvalidPassword12");
 
         // Act
         HttpResponseMessage response = await _httpClient.PostAsJsonAsync("/api/auth/login", request);

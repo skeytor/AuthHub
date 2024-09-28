@@ -84,7 +84,7 @@ public class UserControllerTests(
 
         var user = await context.Users.FindAsync(userId);
         user.Should().NotBeNull();
-        user.Id.Should().Be(userId);
+        user?.Id.Should().Be(userId);
         // check others properties if you want...
     }
 
@@ -114,7 +114,7 @@ public class UserControllerTests(
     {
         // Arrange
         // Act
-        HttpResponseMessage response = await _httpClient.GetAsync($"/api/me");
+        HttpResponseMessage response = await _httpClient.GetAsync($"/api/user/me");
 
         // Assert
         response.EnsureSuccessStatusCode();

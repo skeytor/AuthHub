@@ -19,7 +19,7 @@ public class TokenProvider(IOptions<OptionsToken> options) : ITokenProvider
             new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new(JwtRegisteredClaimNames.Email, user.Email),
             new(JwtRegisteredClaimNames.UniqueName, user.Username),
-            new(JwtRegisteredClaimNames.GivenName, user.LastName),
+            new(ClaimTypes.Role, user.Role.Name)
         ];
 
         SigningCredentials signingCredentials = new(

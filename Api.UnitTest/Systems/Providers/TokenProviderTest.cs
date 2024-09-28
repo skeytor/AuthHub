@@ -31,7 +31,8 @@ public class TokenProviderTest
             Username = "user_name",
             Email = "email@example.com",
             Password = "Pass",
-            RoleId = 1
+            RoleId = 1,
+            Role = new() { Id = 1, Name = "Admin", Description = "Admin user" }
         };
         // Act
         var token = tokenProvider.GetAccesToken(user);

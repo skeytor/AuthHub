@@ -21,14 +21,14 @@ public sealed class UserRepository(IAppDbContext context)
             .AsNoTracking()
             .ToListAsync();
 
-    public async Task<User?> GetByIdAsync(Guid id) => await
-            _Context
+    public async Task<User?> GetByIdAsync(Guid id) => await _Context
             .Users
-            .FindAsync(id);
+            .Include(x => x.Role)
+            .FirstOrDefaultAsync(x => x.Id == id);
 
-    public async Task<User?> GetByUserNameAsync(string userName) => await
-            _Context
+    public async Task<User?> GetByUserNameAsync(string userName) => await _Context
             .Users
+            .Include(x => x.Role)
             .FirstOrDefaultAsync(u => u.Username == userName);
 
     public async Task<bool> EmailExistsAsync(string email) => await _Context

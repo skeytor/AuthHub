@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace AuthHub.Api.IntegrationTest.Initialization;
+
 /// <summary>
 /// Provides methods for clearing and seeding data in the database
 /// Used for setting up and resetting the database for integration tests or initial data setup
@@ -76,7 +77,7 @@ public static class SampleDataInitializer
                 if (!isGuidKey)
                 {
                     context.Database.ExecuteSqlRaw(
-                        $"SET IDENTITY_INSERT {metaData.GetSchema()}.{metaData.GetTableName()} ON");
+                        $"SET IDENTITY_INSERT {metaData?.GetSchema()}.{metaData?.GetTableName()} ON");
                 }
                 table.AddRange(records);
                 context.SaveChanges();
@@ -84,7 +85,7 @@ public static class SampleDataInitializer
                 if (!isGuidKey)
                 {
                     context.Database.ExecuteSqlRaw(
-                        $"SET IDENTITY_INSERT {metaData.GetSchema()}.{metaData.GetTableName()} OFF");
+                        $"SET IDENTITY_INSERT {metaData?.GetSchema()}.{metaData?.GetTableName()} OFF");
                 }
                 transaccion.Commit();
             });
