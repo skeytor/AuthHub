@@ -18,15 +18,15 @@ services:
     ports:
       - "1433:1433"
 
-  nginx:
-    build:
-      context: './nginx'
-      dockerfile: Dockerfile
-    ports:
-      - 80:80
-    restart: unless-stopped
-    depends_on:
-      - authhub.api
+  # nginx:
+  #   build:
+  #     context: './nginx'
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - 80:80
+  #   restart: unless-stopped
+  #   depends_on:
+  #     - authhub.api
 
 volumes:
   authhubdata:

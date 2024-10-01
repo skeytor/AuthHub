@@ -1,4 +1,5 @@
 ﻿using AuthHub.Api.Dtos;
+using AuthHub.Api.Extensions;
 using AuthHub.Api.Services.Auth;
 using Microsoft.AspNetCore.Authentication.BearerToken;
 using Microsoft.AspNetCore.Authorization;
@@ -12,7 +13,6 @@ namespace AuthHub.Api.Controllers;
 /// <param name="authService"></param>
 [Route("api/[controller]")]
 [ApiController]
-[Authorize]
 public class AuthController(
     IAuthenticationService authService) : ControllerBase
 {
@@ -23,11 +23,12 @@ public class AuthController(
         var result = await authService.AuthenticateAsync(request);
         return result.IsSuccess
             ? Ok(result.Value) 
-            : BadRequest();
+            : BadRequest(result.ToProblemDetails());
     }
 
+    [Authorize]
     [HttpPost("logout")]
-    public async Task<IActionResult> Logout()
+    public Task<IActionResult> Logout()
     {
         throw new NotImplementedException();
     }

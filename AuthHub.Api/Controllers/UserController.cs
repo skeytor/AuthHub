@@ -1,4 +1,5 @@
 ﻿using AuthHub.Api.Dtos;
+using AuthHub.Api.Extensions;
 using AuthHub.Api.Services.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,21 +12,20 @@ namespace AuthHub.Api.Controllers;
 /// </summary>
 /// <param name="userService"></param>
 [Route("api/[controller]")]
-[ApiController]
-[Authorize]
+[Authorize(Roles = "Admin,Supervisor")]
 public sealed class UserController(
-    IUserService userService) : ControllerBase
+    IUserService userService) : ApiBaseController
 {
     [HttpGet("me"), ProducesResponseType<UserResponse>(StatusCodes.Status200OK)]
     public async Task<IActionResult> Me()
     {
         string userIdClaimValue = User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
-        if (Guid.TryParse(userIdClaimValue, out var userId)) 
-        { 
+        if (Guid.TryParse(userIdClaimValue, out var userId))
+        {
             var result = await userService.GetByIdAsync(userId);
             return result.IsSuccess
-                ? Ok(result.Value) 
-                : NotFound();
+                ? Ok(result.Value)
+                : NotFound(result.ToProblemDetails());
         }
         return BadRequest();
     }
@@ -36,7 +36,7 @@ public sealed class UserController(
         var result = await userService.GetAllAsync();
         return result.IsSuccess
             ? Ok(result.Value)
-            : BadRequest();
+            : BadRequest(result.ToProblemDetails());
     }
 
     [HttpPost, ProducesResponseType<Guid>(StatusCodes.Status201Created)]
@@ -45,7 +45,7 @@ public sealed class UserController(
         var result = await userService.RegisterAsync(request);
         return result.IsSuccess
             ? CreatedAtAction(nameof(GetAll), result.Value)
-            : BadRequest();
+            : BadRequest(result.ToProblemDetails());
     }
 
     [HttpGet("{id}"), ProducesResponseType<UserResponse>(StatusCodes.Status200OK)]
@@ -54,7 +54,7 @@ public sealed class UserController(
         var result = await userService.GetByIdAsync(id);
         return result.IsSuccess
             ? Ok(result.Value)
-            : NotFound();
+            : NotFound(result.ToProblemDetails());
     }
 
     [HttpPut("{id}"), ProducesResponseType<Guid>(StatusCodes.Status200OK)]

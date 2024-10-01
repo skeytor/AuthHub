@@ -159,7 +159,7 @@ public class UserServiceTest
             .BeTrue();
         result.Error.Type
             .Should()
-            .Be(ErrorType.Conflict);
+            .Be(ErrorType.Validation);
     }
 
     [Theory, ClassData(typeof(ValidUserTestData))]

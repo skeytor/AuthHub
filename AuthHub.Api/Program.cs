@@ -20,6 +20,8 @@ builder.Services.AddAppServices();
 // Add a custom authorization and authentication configuration to the container.
 builder.Services.AddAuthenticationAndAuthorization();
 
+builder.Services.AddProblemDetails();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

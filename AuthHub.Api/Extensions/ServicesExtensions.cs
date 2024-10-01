@@ -37,4 +37,10 @@ internal static class ServicesExtensions
         services.ConfigureOptions<ConfigureSwaggerGenOptions>();
         return services;
     }
+
+    internal static IServiceCollection AddPermissions(this IServiceCollection services)
+    {
+        services.AddDataProtection();
+        return services;
+    }
 }

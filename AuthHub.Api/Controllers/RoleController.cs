@@ -11,7 +11,7 @@ namespace AuthHub.Api.Controllers;
 /// <param name="roleService">The service responsible for handling business logic related to roles</param>
 [Route("api/[controller]")]
 [ApiController]
-[Authorize]
+[Authorize(Roles = "Admin,Supervisor")]
 public class RoleController(IRoleService roleService) : ControllerBase
 {
     /// <summary>

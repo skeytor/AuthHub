@@ -121,11 +121,9 @@ public class UserControllerTests(
 
     }
 
-
     [Fact]
     public async Task Update_Should_Return200StatusCode_WhenRequestDataIsValid()
     {
-        // Arrange
         // Arrange
         using IServiceScope scope = _factory.Services.CreateScope();
         AppDbContext context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
