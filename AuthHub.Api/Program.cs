@@ -9,7 +9,7 @@ builder.Services.AddControllers();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwagger();
 
 // Add app repositories to the container.
 builder.Services.AddRepositories(builder.Configuration);
@@ -20,6 +20,7 @@ builder.Services.AddAppServices();
 // Add a custom authorization and authentication configuration to the container.
 builder.Services.AddAuthenticationAndAuthorization();
 
+// Add the problem deatils services.
 builder.Services.AddProblemDetails();
 
 var app = builder.Build();
@@ -28,10 +29,7 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI(option =>
-    {
-        option.EnablePersistAuthorization();
-    });
+    app.UseSwaggerUI(options => options.EnablePersistAuthorization());
     app.ApplyMigrations();
 }
 

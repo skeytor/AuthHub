@@ -4,9 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AuthHub.Api.Extensions;
 
-public static class ResultExtension
+internal static class ResultExtension
 {
-    public static ProblemDetails ToProblemDetails(this Result result)
+    internal static ProblemDetails ToProblemDetails(this Result result)
     {
         if (result.IsSuccess)
         {
@@ -15,10 +15,19 @@ public static class ResultExtension
         (int statusCode, string title) = GetStatusCodeAndTitle(result.Error.Type);
         return CreateProblemDetails(title, statusCode, result.Error);
     }
+    internal static IResult ToProblems(this Result result) 
+    {
+        if (result.IsSuccess)
+        {
+            throw new InvalidOperationException();
+        }
+        var (statusCode, title) = GetStatusCodeAndTitle(result.Error.Type);
+        return Results.Problem(CreateProblemDetails(title, statusCode, result.Error));
+    }
     private static (int statusCode, string title) GetStatusCodeAndTitle(ErrorType errorType) =>
     errorType switch
     {
-        ErrorType.Validation => (StatusCodes.Status400BadRequest, "Bad Request"),
+        ErrorType.Validation or ErrorType.Failure => (StatusCodes.Status400BadRequest, "Bad Request"),
         ErrorType.NotFound => (StatusCodes.Status404NotFound, "Not Found"),
         ErrorType.Conflict => (StatusCodes.Status409Conflict, "Conflict"),
         _ => (StatusCodes.Status500InternalServerError, "Server Error"),

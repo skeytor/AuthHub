@@ -9,7 +9,7 @@ namespace AuthHub.Api.OptionsSetup;
 internal sealed class JwtBearerParametersConfigureOptions(IOptions<OptionsToken> options)
     : IConfigureNamedOptions<JwtBearerOptions>
 {
-    private readonly OptionsToken optionsToken = options.Value;
+    private readonly OptionsToken _optionsToken = options.Value;
     public void Configure(string? name, JwtBearerOptions options) => 
         Configure(options);
 
@@ -20,8 +20,8 @@ internal sealed class JwtBearerParametersConfigureOptions(IOptions<OptionsToken>
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = optionsToken.Issuer,
-            ValidAudience = optionsToken.Audience,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(optionsToken.SecretKey)),
+            ValidIssuer = _optionsToken.Issuer,
+            ValidAudience = _optionsToken.Audience,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_optionsToken.SecretKey)),
         };
 }

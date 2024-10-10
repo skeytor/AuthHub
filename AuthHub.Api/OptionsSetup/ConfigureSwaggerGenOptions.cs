@@ -9,14 +9,11 @@ internal class ConfigureSwaggerGenOptions : IConfigureNamedOptions<SwaggerGenOpt
 {
     public void Configure(string? name, SwaggerGenOptions options) => 
         Configure(options);
-
     public void Configure(SwaggerGenOptions options)
     {
         ConfigureDocInformation(options);
         ConfigureDocAuthentication(options);
     }
-
-
     private static void ConfigureDocInformation(SwaggerGenOptions options)
     {
         options.SwaggerDoc("v1", new OpenApiInfo

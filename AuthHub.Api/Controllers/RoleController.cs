@@ -1,4 +1,5 @@
 ﻿using AuthHub.Api.Dtos;
+using AuthHub.Api.Extensions;
 using AuthHub.Api.Services.Roles;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,9 +11,8 @@ namespace AuthHub.Api.Controllers;
 /// </summary>
 /// <param name="roleService">The service responsible for handling business logic related to roles</param>
 [Route("api/[controller]")]
-[ApiController]
-[Authorize(Roles = "Admin,Supervisor")]
-public class RoleController(IRoleService roleService) : ControllerBase
+[Authorize(Roles = "Admin")]
+public class RoleController(IRoleService roleService) : ApiBaseController
 {
     /// <summary>
     /// Retrieves all roles in the system
@@ -24,7 +24,9 @@ public class RoleController(IRoleService roleService) : ControllerBase
     public async Task<IActionResult> GetAll()
     {
         var result = await roleService.GetAllAsync();
-        return Ok(result.Value);
+        return result.IsSuccess
+            ? Ok(result.Value) 
+            : BadRequest(result.ToProblemDetails());
     }
 
     /// <summary>
@@ -42,6 +44,6 @@ public class RoleController(IRoleService roleService) : ControllerBase
         var result = await roleService.CreateAsync(request);
         return result.IsSuccess
             ? CreatedAtAction(nameof(GetAll), result.Value)
-            : BadRequest();
+            : BadRequest(result.ToProblemDetails());
     }
 }

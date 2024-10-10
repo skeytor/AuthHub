@@ -12,9 +12,8 @@ namespace AuthHub.Api.Controllers;
 /// </summary>
 /// <param name="authService"></param>
 [Route("api/[controller]")]
-[ApiController]
 public class AuthController(
-    IAuthenticationService authService) : ControllerBase
+    IAuthenticationService authService) : ApiBaseController
 {
     [AllowAnonymous]
     [HttpPost("login"), ProducesResponseType<AccessTokenResponse>(StatusCodes.Status200OK)]
@@ -23,7 +22,7 @@ public class AuthController(
         var result = await authService.AuthenticateAsync(request);
         return result.IsSuccess
             ? Ok(result.Value) 
-            : BadRequest(result.ToProblemDetails());
+            : HandleFailure(result);
     }
 
     [Authorize]

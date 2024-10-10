@@ -12,7 +12,7 @@ namespace AuthHub.Api.Controllers;
 /// </summary>
 /// <param name="userService"></param>
 [Route("api/[controller]")]
-[Authorize(Roles = "Admin,Supervisor")]
+[Authorize(Roles = "Admin,Account")]
 public sealed class UserController(
     IUserService userService) : ApiBaseController
 {
@@ -54,8 +54,19 @@ public sealed class UserController(
         var result = await userService.GetByIdAsync(id);
         return result.IsSuccess
             ? Ok(result.Value)
-            : NotFound(result.ToProblemDetails());
+            : HandleFailure(result);
     }
+
+
+    [HttpGet("user/{id}"), ProducesResponseType<UserResponse>(StatusCodes.Status200OK)]
+    public async Task<IResult> GetByIds([FromRoute] Guid id)
+    {
+        var result = await userService.GetByIdAsync(id);
+        return result.IsSuccess
+            ? Results.Ok(result.Value)
+            : result.ToProblems();
+    }
+
 
     [HttpPut("{id}"), ProducesResponseType<Guid>(StatusCodes.Status200OK)]
     public async Task<IActionResult> Update(
