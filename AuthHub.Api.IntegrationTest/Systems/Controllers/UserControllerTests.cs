@@ -110,7 +110,22 @@ public class UserControllerTests(
     }
 
     [Fact]
-    public async Task GetProfileInformation_Should_ReturnUserInformation_WhenUserIsAuthenticated()
+    public async Task GetById_Should_ReturnNotFoundStatusCode_WhenUserDoesNotExist()
+    {
+        // Arrange
+        Guid userId = Guid.NewGuid();
+
+        // Act
+        HttpResponseMessage response = await _httpClient.GetAsync($"/api/user/{userId}");
+
+        // Assert
+        string message = await response.Content.ReadAsStringAsync();
+        _testOutputHelper.WriteLine(message);
+
+        response.StatusCode.Should().Be(System.Net.HttpStatusCode.NotFound);
+    }
+    [Fact]
+    public async Task GetUserProfile_Should_ReturnProfile_WhenUserIsOnlyAuthenticated()
     {
         // Arrange
         // Act
@@ -118,14 +133,12 @@ public class UserControllerTests(
 
         // Assert
         response.EnsureSuccessStatusCode();
-
+        response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
     }
-
 
     [Fact]
     public async Task Update_Should_Return200StatusCode_WhenRequestDataIsValid()
     {
-        // Arrange
         // Arrange
         using IServiceScope scope = _factory.Services.CreateScope();
         AppDbContext context = scope.ServiceProvider.GetRequiredService<AppDbContext>();

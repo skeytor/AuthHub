@@ -1,5 +1,6 @@
 ﻿using AuthHub.Api.Dtos;
 using AuthHub.Domain.Entities;
+using AuthHub.Domain.Errors;
 using AuthHub.Domain.Repositories;
 using AuthHub.Domain.Results;
 using AuthHub.Persistence.Abstractions;
@@ -22,13 +23,11 @@ public sealed class UserService(
     {
         if (await userRepository.EmailExistsAsync(request.Email))
         {
-            return Result.Failure<Guid>(
-                Error.Conflict("User.AlreadyEmail", $"Email {request.Email} is already"));
+            return Result.Failure<Guid>(UserError.EmailAlready(request.Email));
         }
         if (await userRepository.UserNameExistsAsync(request.UserName))
         {
-            return Result.Failure<Guid>(
-                Error.Conflict("User.Username", $"Username: {request.UserName} is already"));
+            return Result.Failure<Guid>(UserError.UserNameAlready(request.UserName));
         }
         User user = new()
         {
@@ -58,8 +57,7 @@ public sealed class UserService(
         User? user = await userRepository.GetByIdAsync(id);
         if (user is null)
         {
-            return Result.Failure<UserResponse>(
-                Error.NotFound("User.Id", $"User with ID: {id} was not found"));
+            return Result.Failure<UserResponse>(UserError.NotFound(id));
         }
         return new UserResponse(user.Id, user.FirstName, user.LastName, user.Email);
     }
@@ -69,18 +67,15 @@ public sealed class UserService(
         User? user = await userRepository.GetByIdAsync(id);
         if (user is null)
         {
-            return Result.Failure<Guid>(
-                Error.NotFound("User.Id", $"User with ID: {id} was not found"));
+            return Result.Failure<Guid>(UserError.NotFound(id));
         }
         if (await userRepository.EmailExistsAsync(request.Email)) 
         {
-            return Result.Failure<Guid>(
-                Error.Conflict("User.Email", $"Email: {request.Email} is already"));
+            return Result.Failure<Guid>(UserError.EmailAlready(request.Email));
         }
         if (await userRepository.UserNameExistsAsync(request.UserName))
         {
-            return Result.Failure<Guid>(
-                        Error.NotFound("User.Username", $"Userbane: {request.UserName} is already"));
+            return Result.Failure<Guid>(UserError.UserNameAlready(request.UserName));
         }
         user.FirstName = request.FirstName;
         user.LastName = request.LastName;

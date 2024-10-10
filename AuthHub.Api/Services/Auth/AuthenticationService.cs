@@ -1,5 +1,6 @@
 ﻿using AuthHub.Api.Dtos;
 using AuthHub.Domain.Entities;
+using AuthHub.Domain.Errors;
 using AuthHub.Domain.Repositories;
 using AuthHub.Domain.Results;
 using AuthHub.Infrastructure.Authentication;
@@ -18,18 +19,18 @@ public class AuthenticationService(
         var user = await userRepository.GetByUserNameAsync(request.UserName);
         if (user is null)
         {
-            return Result.Failure<AccessTokenResponse>(Error.NotFound("", ""));
+            return Result.Failure<AccessTokenResponse>(AuthError.InvalidCredentials());
         }
         if (!user.IsActive)
         {
-            return Result.Failure<AccessTokenResponse>(Error.NotFound("", ""));
+            return Result.Failure<AccessTokenResponse>(AuthError.InvalidCredentials());
         }
         PasswordVerificationResult passwordVerification = passwordHasher
             .VerifyHashedPassword(user, user.Password, request.Password);
         
         if (passwordVerification is PasswordVerificationResult.Failed)
         {
-            return Result.Failure<AccessTokenResponse>(Error.Validation("", ""));
+            return Result.Failure<AccessTokenResponse>(AuthError.InvalidCredentials());
         }
         AccessTokenResponse tokenResponse = tokenProvider.GetAccesToken(user);
         return tokenResponse;

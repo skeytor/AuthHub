@@ -20,7 +20,7 @@ internal static class ServicesExtensions
         return services;
     }
     /// <summary>
-    /// Configure Authentication options and add Authorization
+    /// Configure Authentication options and add Authorization for the application.
     /// </summary>
     /// <param name="services"></param>
     /// <returns></returns>
@@ -30,10 +30,18 @@ internal static class ServicesExtensions
         services.AddAuthorization();
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer();
+
+        // Add JWT Provider from Infrastructure Project
         services.AddJwtBearerTokenProvider();
         services
             .ConfigureOptions<JwtBearerConfigureOptions>()
             .ConfigureOptions<JwtBearerParametersConfigureOptions>();
+        return services;
+    }
+    
+    internal static IServiceCollection AddSwagger(this IServiceCollection services)
+    {
+        services.AddSwaggerGen();
         services.ConfigureOptions<ConfigureSwaggerGenOptions>();
         return services;
     }
