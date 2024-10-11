@@ -26,7 +26,7 @@ public sealed class UserController(
             var result = await userService.GetByIdAsync(userId);
             return result.IsSuccess
                 ? Ok(result.Value)
-                : NotFound(result.ToProblemDetails());
+                : HandleFailure(result);
         }
         return BadRequest();
     }
@@ -39,7 +39,7 @@ public sealed class UserController(
         var result = await userService.GetAllAsync();
         return result.IsSuccess
             ? Ok(result.Value)
-            : BadRequest(result.ToProblemDetails());
+            : HandleFailure(result);
     }
 
     [HttpPost, ProducesResponseType<Guid>(StatusCodes.Status201Created)]
@@ -48,7 +48,7 @@ public sealed class UserController(
         var result = await userService.RegisterAsync(request);
         return result.IsSuccess
             ? CreatedAtAction(nameof(GetAll), result.Value)
-            : BadRequest(result.ToProblemDetails());
+            : HandleFailure(result);
     }
 
     [HttpGet("{id}"), ProducesResponseType<UserResponse>(StatusCodes.Status200OK)]
@@ -78,6 +78,6 @@ public sealed class UserController(
         var result = await userService.Update(id, request);
         return result.IsSuccess
             ? Ok(result.Value)
-            : BadRequest();
+            : HandleFailure(result);
     }
 }

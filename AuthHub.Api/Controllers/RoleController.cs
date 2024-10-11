@@ -19,7 +19,7 @@ public class RoleController(IRoleService roleService) : ApiBaseController
         var result = await roleService.GetAllAsync();
         return result.IsSuccess
             ? Ok(result.Value) 
-            : BadRequest(result.ToProblemDetails());
+            : HandleFailure(result);
     }
 
     [HttpPost, ProducesResponseType<string>(StatusCodes.Status201Created)]
@@ -28,6 +28,6 @@ public class RoleController(IRoleService roleService) : ApiBaseController
         var result = await roleService.CreateAsync(request);
         return result.IsSuccess
             ? CreatedAtAction(nameof(GetAll), result.Value)
-            : BadRequest(result.ToProblemDetails());
+            : HandleFailure(result);
     }
 }
