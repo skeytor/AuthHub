@@ -9,11 +9,11 @@ namespace AuthHub.Api.Services.Users;
 public interface IUserService
 {
     /// <summary>
-    /// Retrieves all users in the system.
+    /// Returns all users.
     /// </summary>
     /// <returns>
     /// A task that represents the asynchronouns operation, containing a <see cref="Result{TValue}"/>
-    /// with a read-only list of <see cref="UserResponse"/> objects if it is successful.
+    /// with a <see cref="IReadOnlyList{T}"/> of <see cref="UserResponse"/> if it is successful.
     /// </returns>
     Task<Result<IReadOnlyList<UserResponse>>> GetAllAsync();
     /// <summary>
@@ -39,8 +39,8 @@ public interface IUserService
     /// <param name="id">The unique identifier of the user to update.</param>
     /// <param name="request">The updated user information</param>
     /// <returns>
-    /// A task that represents the asynchronous operation, containing a <see cref="Result{T}"/> with the updated user's unique identifier
-    /// (a <see cref="Guid"/>) if the update is successful.
+    /// A task that represents the asynchronous operation, containing a <see cref="Result{T}"/> 
+    /// with the updated user's unique identifier <see cref="Guid"/> if the update is successful.
     /// </returns>
     Task<Result<Guid>> Update(Guid id, CreateUserRequest request);
 }
