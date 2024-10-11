@@ -11,6 +11,16 @@ namespace AuthHub.Api.Controllers;
 [ApiController]
 public abstract class ApiBaseController : ControllerBase
 {
+    /// <summary>
+    /// Handles failure results by resturning appropiate HTTP responses based on the type of error.
+    /// </summary>
+    /// <param name="result">The result object that contains success or error information.</param>
+    /// <returns>
+    /// A corresponding HTTP status code based on the error type.
+    /// </returns>
+    /// <exception cref="InvalidOperationException">Thrown if the result indicate success, as this method
+    /// is meant to handle failures only.
+    /// </exception>
     protected IActionResult HandleFailure(Result result) =>
         result switch
         {

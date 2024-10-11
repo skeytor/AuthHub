@@ -12,11 +12,12 @@ namespace AuthHub.Api.Controllers;
 /// </summary>
 /// <param name="userService"></param>
 [Route("api/[controller]")]
-[Authorize(Roles = "Admin,Account")]
 public sealed class UserController(
     IUserService userService) : ApiBaseController
 {
-    [HttpGet("me"), ProducesResponseType<UserResponse>(StatusCodes.Status200OK)]
+    [HttpGet("me")]
+    [ProducesResponseType<UserResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Me()
     {
         string userIdClaimValue = User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
@@ -30,7 +31,9 @@ public sealed class UserController(
         return BadRequest();
     }
 
-    [HttpGet, ProducesResponseType<List<UserResponse>>(StatusCodes.Status200OK)]
+    [HttpGet]
+    [ProducesResponseType<List<UserResponse>>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetAll()
     {
         var result = await userService.GetAllAsync();
