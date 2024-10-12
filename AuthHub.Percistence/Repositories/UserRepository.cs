@@ -45,6 +45,7 @@ public sealed class UserRepository(IAppDbContext context)
     {
         string[] permission = await _Context
             .Users
+            .AsNoTracking()
             .Include(x => x.Role)
             .ThenInclude(x => x.Permissions)
             .Where(x => x.Id == userId)

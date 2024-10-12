@@ -12,7 +12,7 @@ public interface IUserRepository
     /// </summary>
     /// <param name="user">The user entity to insert.</param>
     /// <returns>
-    /// A task that represents the asynchronous operation. The task result contains the inserted user entity.
+    /// A <see cref="Task{TResult}"/> that represents the asynchronous operation. The task result contains the inserted <see cref="User"/>.
     /// </returns>
     Task<User> InsertAsync(User user);
     /// <summary>
@@ -20,7 +20,7 @@ public interface IUserRepository
     /// </summary>
     /// <param name="id">The unique identifier of the user.</param>
     /// <returns>
-    /// A task that represents the asynchronous operation. The task result contains the user entity if found;
+    /// A <see cref="Task{TResult}"/> that represents the asynchronous operation. The task result contains the <see cref="User"/> if found;
     /// otherwise, <c>null</c>
     /// </returns>
     Task<User?> GetByIdAsync(Guid id);
@@ -37,7 +37,7 @@ public interface IUserRepository
     /// </summary>
     /// <param name="userName">The username of the user</param>
     /// <returns>
-    /// A task that represents the asynchronouns operation. The task result contains a <see cref="User"/> if it is found;
+    /// A tasl that represents the asynchronouns operation. The task result contains a <see cref="User"/> if it is found;
     /// otherwise, <c>null</c>
     /// </returns>
     Task<User?> GetByUserNameAsync(string userName);

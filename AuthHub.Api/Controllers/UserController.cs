@@ -73,7 +73,7 @@ public sealed class UserController(
 
     [HttpPut("{id}"), ProducesResponseType<Guid>(StatusCodes.Status200OK)]
     public async Task<IActionResult> Update(
-        [FromRoute] Guid id, CreateUserRequest request)
+        [FromRoute] Guid id, [FromBody] CreateUserRequest request)
     {
         var result = await userService.Update(id, request);
         return result.IsSuccess

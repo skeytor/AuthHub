@@ -19,18 +19,18 @@ public class AuthenticationService(
         var user = await userRepository.GetByUserNameAsync(request.UserName);
         if (user is null)
         {
-            return Result.Failure<AccessTokenResponse>(AuthError.InvalidCredentials());
+            return Result.Failure<AccessTokenResponse>(AuthenticationError.InvalidCredentials);
         }
         if (!user.IsActive)
         {
-            return Result.Failure<AccessTokenResponse>(AuthError.InvalidCredentials());
+            return Result.Failure<AccessTokenResponse>(AuthenticationError.InvalidCredentials);
         }
         PasswordVerificationResult passwordVerification = passwordHasher
             .VerifyHashedPassword(user, user.Password, request.Password);
         
         if (passwordVerification is PasswordVerificationResult.Failed)
         {
-            return Result.Failure<AccessTokenResponse>(AuthError.InvalidCredentials());
+            return Result.Failure<AccessTokenResponse>(AuthenticationError.InvalidCredentials);
         }
         AccessTokenResponse tokenResponse = tokenProvider.GetAccesToken(user);
         return tokenResponse;
