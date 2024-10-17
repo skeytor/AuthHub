@@ -1,9 +1,7 @@
 ﻿using AuthHub.Api.Dtos;
-using AuthHub.Api.Extensions;
 using AuthHub.Api.Services.Auth;
 using Microsoft.AspNetCore.Authentication.BearerToken;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AuthHub.Api.Controllers;

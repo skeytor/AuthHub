@@ -32,7 +32,7 @@ public class AuthenticationService(
         {
             return Result.Failure<AccessTokenResponse>(AuthenticationError.InvalidCredentials);
         }
-        AccessTokenResponse tokenResponse = tokenProvider.GetAccesToken(user);
+        AccessTokenResponse tokenResponse = tokenProvider.GetAccessToken(user);
         return tokenResponse;
     }
 }

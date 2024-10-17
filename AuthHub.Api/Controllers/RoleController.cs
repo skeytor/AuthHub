@@ -1,5 +1,4 @@
 ﻿using AuthHub.Api.Dtos;
-using AuthHub.Api.Extensions;
 using AuthHub.Api.Services.Roles;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,6 +10,7 @@ namespace AuthHub.Api.Controllers;
 /// </summary>
 /// <param name="roleService">The service responsible for handling business logic related to roles</param>
 [Route("api/[controller]")]
+[Authorize(Policy = "Admin")]
 public class RoleController(IRoleService roleService) : ApiBaseController
 {
     [HttpGet, ProducesResponseType<List<RoleResponse>>(StatusCodes.Status200OK)]

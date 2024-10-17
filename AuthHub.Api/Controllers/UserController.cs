@@ -1,5 +1,4 @@
 ﻿using AuthHub.Api.Dtos;
-using AuthHub.Api.Extensions;
 using AuthHub.Api.Services.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,12 +11,11 @@ namespace AuthHub.Api.Controllers;
 /// </summary>
 /// <param name="userService"></param>
 [Route("api/[controller]")]
+[Authorize(Policy = "Admin")]
 public sealed class UserController(
     IUserService userService) : ApiBaseController
 {
-    [HttpGet("me")]
-    [ProducesResponseType<UserResponse>(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [HttpGet("me"), ProducesResponseType<UserResponse>(StatusCodes.Status200OK)]
     public async Task<IActionResult> Me()
     {
         string userIdClaimValue = User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
@@ -31,9 +29,7 @@ public sealed class UserController(
         return BadRequest();
     }
 
-    [HttpGet]
-    [ProducesResponseType<List<UserResponse>>(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [HttpGet, ProducesResponseType<List<UserResponse>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll()
     {
         var result = await userService.GetAllAsync();
@@ -60,24 +56,13 @@ public sealed class UserController(
             : HandleFailure(result);
     }
 
-
-    [HttpGet("user/{id}"), ProducesResponseType<UserResponse>(StatusCodes.Status200OK)]
-    public async Task<IResult> GetByIds([FromRoute] Guid id)
-    {
-        var result = await userService.GetByIdAsync(id);
-        return result.IsSuccess
-            ? Results.Ok(result.Value)
-            : result.ToProblems();
-    }
-
-
-    [HttpPut("{id}"), ProducesResponseType<Guid>(StatusCodes.Status200OK)]
+    [HttpPut("{id}"), ProducesResponseType<Guid>(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> Update(
         [FromRoute] Guid id, [FromBody] CreateUserRequest request)
     {
         var result = await userService.Update(id, request);
         return result.IsSuccess
-            ? Ok(result.Value)
+            ? NoContent()
             : HandleFailure(result);
     }
 }

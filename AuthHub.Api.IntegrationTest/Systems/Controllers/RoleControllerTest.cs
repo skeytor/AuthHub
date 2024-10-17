@@ -13,12 +13,13 @@ public class RoleControllerTest(
     ITestOutputHelper outputHelper) 
     : BaseWebApplicationTest(fixuture, outputHelper)
 {
-    [Fact]
-    public async Task GetRoles_Should_ReturnRolesList()
+    [Theory]
+    [InlineData("/api/role")]
+    public async Task GetRoles_Should_ReturnRolesList(string pathURL)
     {
         // Arrange
         // Act
-        HttpResponseMessage response = await _httpClient.GetAsync("/api/role");
+        HttpResponseMessage response = await _httpClient.GetAsync(pathURL);
 
         // Assert
         response.EnsureSuccessStatusCode();

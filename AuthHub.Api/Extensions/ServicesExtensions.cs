@@ -44,6 +44,10 @@ internal static class ServicesExtensions
 
         // Add JWT Provider from Infrastructure Project
         services.AddJwtBearerTokenProvider();
+
+        // Add custom policy provider from Infrastructure project
+        services.AddAuthorizationPolicyProvider();
+
         services
             .ConfigureOptions<JwtBearerConfigureOptions>()
             .ConfigureOptions<JwtBearerParametersConfigureOptions>();

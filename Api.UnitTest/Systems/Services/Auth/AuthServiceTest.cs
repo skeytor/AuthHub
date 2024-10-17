@@ -34,7 +34,7 @@ public class AuthServiceTest
             .Returns(PasswordVerificationResult.Success)
             .Verifiable(Times.Once());
 
-        mockTokenProvider.Setup(provider => provider.GetAccesToken(It.IsAny<User>()))
+        mockTokenProvider.Setup(provider => provider.GetAccessToken(It.IsAny<User>()))
             .Returns(expectedToken)
             .Verifiable(Times.Once());
 

@@ -16,6 +16,7 @@ public class PermissionAuthorizationPolicyProvider(
         }
         return new AuthorizationPolicyBuilder()
             .AddRequirements(new PermissionRequirement(policyName))
+            .RequireAuthenticatedUser()
             .Build();
     }
 }

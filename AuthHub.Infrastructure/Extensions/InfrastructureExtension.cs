@@ -13,7 +13,7 @@ public static class InfrastructureExtension
     }
     public static IServiceCollection AddAuthorizationPolicyProvider(this IServiceCollection services) 
     {
-        services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();
+        services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
         services.AddSingleton<IAuthorizationPolicyProvider, PermissionAuthorizationPolicyProvider>();
         return services;
     }

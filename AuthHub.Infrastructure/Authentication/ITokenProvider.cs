@@ -5,5 +5,5 @@ namespace AuthHub.Infrastructure.Authentication;
 
 public interface ITokenProvider
 {
-    AccessTokenResponse GetAccesToken(User user);
+    AccessTokenResponse GetAccessToken(User user);
 }

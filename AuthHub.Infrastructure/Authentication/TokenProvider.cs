@@ -12,7 +12,7 @@ namespace AuthHub.Infrastructure.Authentication;
 public class TokenProvider(IOptions<OptionsToken> options) : ITokenProvider
 {
     private readonly OptionsToken _optionsToken = options.Value;
-    public AccessTokenResponse GetAccesToken(User user)
+    public AccessTokenResponse GetAccessToken(User user)
     {
         Claim[] claims =
         [
