@@ -1,5 +1,6 @@
 ﻿using AuthHub.Api.Dtos;
 using AuthHub.Api.Services.Users;
+using AuthHub.Infrastructure.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -11,7 +12,6 @@ namespace AuthHub.Api.Controllers;
 /// </summary>
 /// <param name="userService"></param>
 [Route("api/[controller]")]
-[Authorize(Policy = "Admin")]
 public sealed class UserController(
     IUserService userService) : ApiBaseController
 {

@@ -1,4 +1,5 @@
 ﻿using AuthHub.Domain.Entities;
+using AuthHub.Infrastructure.Authorization;
 using Microsoft.AspNetCore.Authentication.BearerToken;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -7,7 +8,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace AuthHub.Infrastructure.Authentication;
+namespace AuthHub.Infrastructure.Authorization;
 
 public class TokenProvider(IOptions<OptionsToken> options) : ITokenProvider
 {
@@ -19,7 +20,6 @@ public class TokenProvider(IOptions<OptionsToken> options) : ITokenProvider
             new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new(JwtRegisteredClaimNames.Email, user.Email),
             new(JwtRegisteredClaimNames.UniqueName, user.Username),
-            new(ClaimTypes.Role, user.Role.Name)
         ];
 
         SigningCredentials signingCredentials = new(

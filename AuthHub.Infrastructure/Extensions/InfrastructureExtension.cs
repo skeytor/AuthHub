@@ -1,4 +1,5 @@
-﻿using AuthHub.Infrastructure.Authentication;
+﻿using AuthHub.Infrastructure.Authorization;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -13,6 +14,7 @@ public static class InfrastructureExtension
     }
     public static IServiceCollection AddAuthorizationPolicyProvider(this IServiceCollection services) 
     {
+        services.AddTransient<IClaimsTransformation, CustomClaimsTransformation>();
         services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
         services.AddSingleton<IAuthorizationPolicyProvider, PermissionAuthorizationPolicyProvider>();
         return services;

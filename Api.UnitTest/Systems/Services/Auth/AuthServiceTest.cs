@@ -3,7 +3,7 @@ using AuthHub.Api.Dtos;
 using AuthHub.Api.Services.Auth;
 using AuthHub.Domain.Entities;
 using AuthHub.Domain.Repositories;
-using AuthHub.Infrastructure.Authentication;
+using AuthHub.Infrastructure.Authorization;
 using FluentAssertions;
 using Microsoft.AspNetCore.Authentication.BearerToken;
 using Microsoft.AspNetCore.Identity;

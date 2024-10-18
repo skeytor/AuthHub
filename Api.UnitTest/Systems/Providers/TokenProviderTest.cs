@@ -1,5 +1,5 @@
 ﻿using AuthHub.Domain.Entities;
-using AuthHub.Infrastructure.Authentication;
+using AuthHub.Infrastructure.Authorization;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
