@@ -1,4 +1,6 @@
-﻿using AuthHub.Persistence;
+﻿using AuthHub.Api.IntegrationTest.Initialization;
+using AuthHub.Persistence;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -29,9 +31,12 @@ public class IntegrationTestWebApplicationFactory<TProgram>
         {
             services.RemoveAll<DbContextOptions<AppDbContext>>();
             services.AddSqlServer<AppDbContext>(_msSqlContainer.GetConnectionString());
+            services.AddAuthentication("TestScheme")
+                .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>("TestScheme", null);
         });
+        builder.UseEnvironment("Development");
     }
     public Task InitializeAsync() => _msSqlContainer.StartAsync();
 
-    public new Task DisposeAsync() => _msSqlContainer.StopAsync();
+    public new Task DisposeAsync() => _msSqlContainer.DisposeAsync().AsTask();
 }

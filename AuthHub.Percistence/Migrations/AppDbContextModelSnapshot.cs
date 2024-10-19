@@ -41,6 +41,33 @@ namespace AuthHub.Persistence.Migrations
                         .IsUnique();
 
                     b.ToTable("Permissions", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "CanViewRoles"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "CanManageRoles"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "CanViewUsers"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "CanManageUsers"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "Forecast"
+                        });
                 });
 
             modelBuilder.Entity("AuthHub.Domain.Entities.Role", b =>

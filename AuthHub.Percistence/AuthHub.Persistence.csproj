@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AuthHub.Domain\AuthHub.Domain.csproj" />
+    <ProjectReference Include="..\AuthHub.Infrastructure\AuthHub.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

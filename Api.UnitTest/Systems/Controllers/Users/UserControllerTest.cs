@@ -57,14 +57,14 @@ public class UserControllerTest
         // Arrange
         var mockUserService = new Mock<IUserService>();
         mockUserService
-            .Setup(service => service.CreateAsync(input))
+            .Setup(service => service.RegisterAsync(input))
             .ReturnsAsync(expectedResult)
             .Verifiable(Times.Once());
 
         UserController userController = new(mockUserService.Object);
 
         // Act
-        var sutActionResult = await userController.Create(input);
+        var sutActionResult = await userController.Register(input);
 
         // Assert
         mockUserService.Verify();
@@ -140,13 +140,10 @@ public class UserControllerTest
 
         // Asseert
         mockUserServiceMock.Verify();
-        sutActionResult.Should().BeOfType<OkObjectResult>();
-        OkObjectResult result = (OkObjectResult)sutActionResult;
+        sutActionResult.Should().BeOfType<NoContentResult>();
+        NoContentResult result = (NoContentResult)sutActionResult;
         result.StatusCode
             .Should()
-            .Be(StatusCodes.Status200OK);
-        result.Value.Should().BeOfType<Guid>();
-        var guid = (Guid)result.Value!;
-        guid.Should().NotBeEmpty();
+            .Be(StatusCodes.Status204NoContent);
     }
 }
