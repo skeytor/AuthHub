@@ -18,6 +18,7 @@ public static class PersistenceExtension
             options.UseSqlServer(configuration.GetConnectionString(DatabaseSectionName)));
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IRoleRepository, RoleRepository>();
+        services.AddScoped<IPermissionRepository, PermissionRepository>();
         services.AddScoped<IAppDbContext>(options => options.GetRequiredService<AppDbContext>());
         services.AddScoped<IUnitOfWork>(options => options.GetRequiredService<AppDbContext>());
         return services;

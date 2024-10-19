@@ -140,13 +140,10 @@ public class UserControllerTest
 
         // Asseert
         mockUserServiceMock.Verify();
-        sutActionResult.Should().BeOfType<OkObjectResult>();
-        OkObjectResult result = (OkObjectResult)sutActionResult;
+        sutActionResult.Should().BeOfType<NoContentResult>();
+        NoContentResult result = (NoContentResult)sutActionResult;
         result.StatusCode
             .Should()
-            .Be(StatusCodes.Status200OK);
-        result.Value.Should().BeOfType<Guid>();
-        var guid = (Guid)result.Value!;
-        guid.Should().NotBeEmpty();
+            .Be(StatusCodes.Status204NoContent);
     }
 }

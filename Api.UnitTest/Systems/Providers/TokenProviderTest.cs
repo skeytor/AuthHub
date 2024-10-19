@@ -1,5 +1,5 @@
 ﻿using AuthHub.Domain.Entities;
-using AuthHub.Infrastructure.Authentication;
+using AuthHub.Infrastructure.Authorization;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -35,7 +35,7 @@ public class TokenProviderTest
             Role = new() { Id = 1, Name = "Admin", Description = "Admin user" }
         };
         // Act
-        var token = tokenProvider.GetAccesToken(user);
+        var token = tokenProvider.GetAccessToken(user);
 
         // Assert
         token.Should().NotBeNull();

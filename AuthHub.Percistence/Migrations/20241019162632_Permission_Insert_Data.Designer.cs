@@ -4,6 +4,7 @@ using AuthHub.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AuthHub.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241019162632_Permission_Insert_Data")]
+    partial class Permission_Insert_Data
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -55,17 +58,17 @@ namespace AuthHub.Persistence.Migrations
                         },
                         new
                         {
-                            Id = 3,
+                            Id = 4,
                             Name = "CanViewUsers"
                         },
                         new
                         {
-                            Id = 4,
+                            Id = 8,
                             Name = "CanManageUsers"
                         },
                         new
                         {
-                            Id = 5,
+                            Id = 16,
                             Name = "Forecast"
                         });
                 });

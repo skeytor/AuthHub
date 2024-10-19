@@ -15,12 +15,13 @@ public class UserControllerTests(
     ITestOutputHelper outputHelper)
     : BaseWebApplicationTest(factory, outputHelper)
 {
-    [Fact]
-    public async Task GetAllUsers_Should_ReturnSuccess()
+    [Theory]
+    [InlineData("/api/user")]
+    public async Task GetAllUsers_Should_ReturnSuccess(string path)
     {
         // Arrange
         // Act
-        HttpResponseMessage response = await _httpClient.GetAsync("/api/user");
+        HttpResponseMessage response = await _httpClient.GetAsync(path);
 
         // Assert
         response.EnsureSuccessStatusCode();
@@ -34,14 +35,16 @@ public class UserControllerTests(
             .BeAssignableTo<IReadOnlyCollection<UserResponse>>();
     }
 
-    [Fact]
-    public async Task CreateUser_Should_ReturnValidationViewModelError_WhenCreateUserRequestIsInvalid()
+    [Theory]
+    [InlineData("/api/user")]
+    public async Task CreateUser_Should_ReturnValidationViewModelError_WhenCreateUserRequestIsInvalid(
+        string path)
     {
         // Arrange
         CreateUserRequest request = new("", "", "", "", "", RoleId: 1); // invalid request data.
 
         // Act
-        HttpResponseMessage response = await _httpClient.PostAsJsonAsync("/api/user", request);
+        HttpResponseMessage response = await _httpClient.PostAsJsonAsync(path, request);
 
         // Assert
         response.StatusCode
@@ -57,8 +60,9 @@ public class UserControllerTests(
             .Contain("errors"); // verify if there is some validation error.
     }
 
-    [Fact]
-    public async Task CreateUser_Should_ReturnSuccess_WhenUserDoesNotExist()
+    [Theory]
+    [InlineData("/api/user")]
+    public async Task CreateUser_Should_ReturnSuccess_WhenUserDoesNotExist(string path)
     {
         // Arrange
         CreateUserRequest request = new(
@@ -70,7 +74,7 @@ public class UserControllerTests(
             RoleId: 1);
 
         // Act
-        HttpResponseMessage response = await _httpClient.PostAsJsonAsync("/api/user", request);
+        HttpResponseMessage response = await _httpClient.PostAsJsonAsync(path, request);
 
         // Assertions
         response.EnsureSuccessStatusCode();
@@ -88,8 +92,9 @@ public class UserControllerTests(
         // check others properties if you want...
     }
 
-    [Fact]
-    public async Task GetById_Should_ReturnUserSuccess_WhenUserExists()
+    [Theory]
+    [InlineData("/api/user")]
+    public async Task GetById_Should_ReturnUserSuccess_WhenUserExists(string path)
     {
         // Arrange
         using IServiceScope scope = _factory.Services.CreateScope();
@@ -100,7 +105,7 @@ public class UserControllerTests(
             .FirstOrDefault();
 
         // Act
-        HttpResponseMessage response = await _httpClient.GetAsync($"/api/user/{userId}");
+        HttpResponseMessage response = await _httpClient.GetAsync($"{path}/{userId}");
 
         // Assert
         response.EnsureSuccessStatusCode();
@@ -109,14 +114,15 @@ public class UserControllerTests(
         data.Should().NotBeNull();
     }
 
-    [Fact]
-    public async Task GetById_Should_ReturnNotFoundStatusCode_WhenUserDoesNotExist()
+    [Theory]
+    [InlineData("/api/user")]
+    public async Task GetById_Should_ReturnNotFoundStatusCode_WhenUserDoesNotExist(string path)
     {
         // Arrange
         Guid userId = Guid.NewGuid();
 
         // Act
-        HttpResponseMessage response = await _httpClient.GetAsync($"/api/user/{userId}");
+        HttpResponseMessage response = await _httpClient.GetAsync($"{path}/{userId}");
 
         // Assert
         string message = await response.Content.ReadAsStringAsync();
@@ -124,20 +130,23 @@ public class UserControllerTests(
 
         response.StatusCode.Should().Be(System.Net.HttpStatusCode.NotFound);
     }
-    [Fact]
-    public async Task GetUserProfile_Should_ReturnProfile_WhenUserIsOnlyAuthenticated()
+
+    [Theory]
+    [InlineData("/api/user/me")]
+    public async Task GetUserProfile_Should_ReturnProfile_WhenUserIsOnlyAuthenticated(string path)
     {
         // Arrange
         // Act
-        HttpResponseMessage response = await _httpClient.GetAsync($"/api/user/me");
+        HttpResponseMessage response = await _httpClient.GetAsync(path);
 
         // Assert
         response.EnsureSuccessStatusCode();
         response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
     }
 
-    [Fact]
-    public async Task Update_Should_Return200StatusCode_WhenRequestDataIsValid()
+    [Theory]
+    [InlineData("/api/user")]
+    public async Task Update_Should_Return200StatusCode_WhenRequestDataIsValid(string path)
     {
         // Arrange
         using IServiceScope scope = _factory.Services.CreateScope();
@@ -156,14 +165,14 @@ public class UserControllerTests(
 
         // Act
         HttpResponseMessage response = await _httpClient.PutAsJsonAsync(
-            $"/api/user/{userId}",
+            $"{path}/{userId}",
             request);
 
         // Assert
-        response.EnsureSuccessStatusCode();
-        response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
+        string message = await response.Content.ReadAsStringAsync();
+        _testOutputHelper.WriteLine($"Message: ", message);
 
-        Guid id = await response.Content.ReadFromJsonAsync<Guid>();
-        id.Should().NotBeEmpty();
+        response.EnsureSuccessStatusCode();
+        response.StatusCode.Should().Be(System.Net.HttpStatusCode.NoContent);
     }
 }

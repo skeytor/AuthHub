@@ -1,6 +1,6 @@
 ﻿using AuthHub.Api.Dtos;
-using AuthHub.Api.Extensions;
 using AuthHub.Api.Services.Users;
+using AuthHub.Infrastructure.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -12,10 +12,11 @@ namespace AuthHub.Api.Controllers;
 /// </summary>
 /// <param name="userService"></param>
 [Route("api/[controller]")]
-[Authorize(Roles = "Admin,Account")]
+[CustomAuthorize(Permissions.CanViewUsers | Permissions.CanManageUsers)]
 public sealed class UserController(
     IUserService userService) : ApiBaseController
 {
+    [AllowAnonymous]
     [HttpGet("me"), ProducesResponseType<UserResponse>(StatusCodes.Status200OK)]
     public async Task<IActionResult> Me()
     {
@@ -25,7 +26,7 @@ public sealed class UserController(
             var result = await userService.GetByIdAsync(userId);
             return result.IsSuccess
                 ? Ok(result.Value)
-                : NotFound(result.ToProblemDetails());
+                : HandleFailure(result);
         }
         return BadRequest();
     }
@@ -36,7 +37,7 @@ public sealed class UserController(
         var result = await userService.GetAllAsync();
         return result.IsSuccess
             ? Ok(result.Value)
-            : BadRequest(result.ToProblemDetails());
+            : HandleFailure(result);
     }
 
     [HttpPost, ProducesResponseType<Guid>(StatusCodes.Status201Created)]
@@ -45,7 +46,7 @@ public sealed class UserController(
         var result = await userService.RegisterAsync(request);
         return result.IsSuccess
             ? CreatedAtAction(nameof(GetAll), result.Value)
-            : BadRequest(result.ToProblemDetails());
+            : HandleFailure(result);
     }
 
     [HttpGet("{id}"), ProducesResponseType<UserResponse>(StatusCodes.Status200OK)]
@@ -57,24 +58,13 @@ public sealed class UserController(
             : HandleFailure(result);
     }
 
-
-    [HttpGet("user/{id}"), ProducesResponseType<UserResponse>(StatusCodes.Status200OK)]
-    public async Task<IResult> GetByIds([FromRoute] Guid id)
-    {
-        var result = await userService.GetByIdAsync(id);
-        return result.IsSuccess
-            ? Results.Ok(result.Value)
-            : result.ToProblems();
-    }
-
-
-    [HttpPut("{id}"), ProducesResponseType<Guid>(StatusCodes.Status200OK)]
+    [HttpPut("{id}"), ProducesResponseType<Guid>(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> Update(
-        [FromRoute] Guid id, CreateUserRequest request)
+        [FromRoute] Guid id, [FromBody] CreateUserRequest request)
     {
         var result = await userService.Update(id, request);
         return result.IsSuccess
-            ? Ok(result.Value)
-            : BadRequest();
+            ? NoContent()
+            : HandleFailure(result);
     }
 }

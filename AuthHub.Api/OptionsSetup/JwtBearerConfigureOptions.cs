@@ -1,4 +1,4 @@
-﻿using AuthHub.Infrastructure.Authentication;
+﻿using AuthHub.Infrastructure.Authorization;
 using Microsoft.Extensions.Options;
 
 namespace AuthHub.Api.OptionsSetup;

@@ -1,4 +1,4 @@
-﻿namespace AuthHub.Infrastructure.Authentication;
+﻿namespace AuthHub.Infrastructure.Authorization;
 
 public record class OptionsToken
 {

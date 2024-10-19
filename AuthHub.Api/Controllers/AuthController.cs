@@ -1,5 +1,4 @@
 ﻿using AuthHub.Api.Dtos;
-using AuthHub.Api.Extensions;
 using AuthHub.Api.Services.Auth;
 using Microsoft.AspNetCore.Authentication.BearerToken;
 using Microsoft.AspNetCore.Authorization;
@@ -25,7 +24,6 @@ public class AuthController(
             : HandleFailure(result);
     }
 
-    [Authorize]
     [HttpPost("logout")]
     public Task<IActionResult> Logout()
     {

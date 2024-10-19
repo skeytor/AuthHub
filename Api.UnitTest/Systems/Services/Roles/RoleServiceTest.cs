@@ -77,7 +77,7 @@ public class RoleServiceTest
         mockRoleRepository.Verify();
         mockUnitOfWork.Verify();
         result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
+        result.Error.Type.Should().Be(ErrorType.NotFound);
     }
 
     [Fact]

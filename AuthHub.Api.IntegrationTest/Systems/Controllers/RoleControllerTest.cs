@@ -13,12 +13,13 @@ public class RoleControllerTest(
     ITestOutputHelper outputHelper) 
     : BaseWebApplicationTest(fixuture, outputHelper)
 {
-    [Fact]
-    public async Task GetRoles_Should_ReturnRolesList()
+    [Theory]
+    [InlineData("/api/role")]
+    public async Task GetRoles_Should_ReturnRolesList(string pathURL)
     {
         // Arrange
         // Act
-        HttpResponseMessage response = await _httpClient.GetAsync("/api/role");
+        HttpResponseMessage response = await _httpClient.GetAsync(pathURL);
 
         // Assert
         response.EnsureSuccessStatusCode();
@@ -33,7 +34,7 @@ public class RoleControllerTest(
     public async Task CreateRole_Should_ReturnRoleName_WhenRoleDoesNotExist()
     {
         // Arrange
-        CreateRoleRequest request = new("Role Test", "This is an administrator", []);
+        CreateRoleRequest request = new("Role Test", "This is an administrator", Permissions: [1, 2, 3]);
 
         // Act
         HttpResponseMessage response = await _httpClient.PostAsJsonAsync("/api/role", request);
@@ -62,7 +63,7 @@ public class RoleControllerTest(
         string message = await response.Content.ReadAsStringAsync();
         _testOutputHelper.WriteLine($"Response Message: {message}");
 
-        response.StatusCode.Should().Be(System.Net.HttpStatusCode.BadRequest);
+        response.StatusCode.Should().Be(System.Net.HttpStatusCode.NotFound);
         var problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>();
 
     }

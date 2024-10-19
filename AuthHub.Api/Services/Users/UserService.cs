@@ -36,7 +36,7 @@ public sealed class UserService(
             Username = request.UserName,
             Email = request.Email,
             IsActive = true,
-            RoleId = request.RoleId
+            RoleId = request.RoleId,
         };
         user.Password = passwordHasher.HashPassword(user, request.Password);
         var userCreated = await userRepository.InsertAsync(user);
