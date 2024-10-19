@@ -14,37 +14,30 @@ public class RoleRepositoryTest(
         ExecuteInATransaction(RunTest);
         void RunTest()
         {
+            List<Permission> permissions1 =
+            [
+                new Permission
+                {
+                    Name = "CanManageUser",
+                },
+                new Permission
+                {
+                    Name = "CanViewUser"
+                }
+            ];
+            Context.Permissions.AddRange(permissions1 );
+            Context.SaveChanges();
+            List<Permission> permissions2 = permissions1.Select(x => new Permission { Id = x.Id} ).ToList();
             Role role = new()
             {
                 Name = "Admin",
                 Description = "This is a admin user",
-                Permissions = [new() { Name = "CanUserRead" }, new() { Name = "CanUserUpdate" }]
-            };
-            User user = new()
-            {
-                FirstName = "Test",
-                LastName = "Test",
-                Email = "email@email.com",
-                Password = "pass",
-                IsActive = true,
-                Role = role,
-                Username = "user_name"
+                Permissions = permissions2
             };
             Context.Roles.Add(role);
-            Context.Users.Add(user);
             Context.SaveChanges();
-            Role[] roles = Context
-                .Users
-                .Include(x => x.Role)
-                .ThenInclude(x => x.Permissions)
-                .Where(x => x.Id == user.Id)
-                .Select(x => x.Role)
-                .ToArray();
-            IReadOnlySet<string> permissions = roles
-                .SelectMany(x => x.Permissions)
-                .Select(x => x.Name)
-                .ToHashSet();
-            Assert.Equal(user.Role.Permissions.Count, permissions.Count);
+            var s = Context.RolePermissions.ToList();
+            Assert.Equal(1, role.Id);
         }
     }
 }

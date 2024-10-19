@@ -173,9 +173,6 @@ public class UserControllerTests(
         _testOutputHelper.WriteLine($"Message: ", message);
 
         response.EnsureSuccessStatusCode();
-        response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
-
-        Guid id = await response.Content.ReadFromJsonAsync<Guid>();
-        id.Should().NotBeEmpty();
+        response.StatusCode.Should().Be(System.Net.HttpStatusCode.NoContent);
     }
 }

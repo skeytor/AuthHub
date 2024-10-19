@@ -15,10 +15,10 @@ public sealed class RoleRepository(IAppDbContext context)
         return roleCreated.Entity;
     }
 
-    public async Task<IReadOnlyList<Role>> GetAllAsync() => await
-            _Context
+    public async Task<IReadOnlyList<Role>> GetAllAsync() => await _Context
             .Roles
             .AsNoTracking()
+            .Include(x => x.Permissions)
             .ToListAsync();
 
     public async Task<Role?> GetByIdAsync(int id) => await _Context
@@ -27,17 +27,17 @@ public sealed class RoleRepository(IAppDbContext context)
 
     public async Task<IReadOnlySet<string>> GetPermissionsByUserIdAsync(Guid userId)
     {
-        Role[] roles = await _Context
+        string[] roles = await _Context
             .Users
+            .AsNoTracking()
             .Include(x => x.Role)
             .ThenInclude(x => x.Permissions)
-            .Where(x => x.Id ==  userId)
+            .Where(x => x.Id == userId)
             .Select(x => x.Role)
-            .ToArrayAsync();
-        return roles
             .SelectMany(x => x.Permissions)
             .Select(x => x.Name)
-            .ToHashSet();
+            .ToArrayAsync();
+        return roles.ToHashSet();
     }
 
     public async Task<bool> RoleExistsAsync(string roleName) => await _Context

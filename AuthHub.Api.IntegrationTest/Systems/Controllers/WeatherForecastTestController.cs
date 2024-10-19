@@ -1,4 +1,5 @@
 ﻿using AuthHub.Api.IntegrationTest.Fixtures;
+using FluentAssertions;
 using Xunit.Abstractions;
 
 namespace AuthHub.Api.IntegrationTest.Systems.Controllers;
@@ -15,6 +16,6 @@ public class WeatherForecastTestController(
         HttpResponseMessage response = await _httpClient.GetAsync(path);
         string message = await response.Content.ReadAsStringAsync();
         _testOutputHelper.WriteLine(message);
-        response.EnsureSuccessStatusCode();
+        response.StatusCode.Should().Be(System.Net.HttpStatusCode.Forbidden);
     }
 }

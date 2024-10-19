@@ -12,7 +12,7 @@ namespace AuthHub.Api.Controllers;
 /// </summary>
 /// <param name="userService"></param>
 [Route("api/[controller]")]
-[CustomAuthorize(Permissions.CanViewUsers & Permissions.CanManageUsers)]
+[CustomAuthorize(Permissions.CanViewUsers | Permissions.CanManageUsers)]
 public sealed class UserController(
     IUserService userService) : ApiBaseController
 {
