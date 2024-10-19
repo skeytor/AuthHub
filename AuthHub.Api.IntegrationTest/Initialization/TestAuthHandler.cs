@@ -20,17 +20,16 @@ internal class TestAuthHandler(
     {
         using IServiceScope scope = serviceScopeFactory.CreateScope();
         IAppDbContext context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-
         var user = context
             .Users
             .AsNoTracking()
             .Include(x => x.Role)
             .ThenInclude(x => x.Permissions)
-            .First();
+            .FirstOrDefault(x => x.Username == "accounter_1"); // See SampleUser class
 
         List<Claim> claims =
         [
-            new(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new(ClaimTypes.NameIdentifier, user!.Id.ToString()),
             new(ClaimTypes.Role, user.Role.Name)
         ];
 

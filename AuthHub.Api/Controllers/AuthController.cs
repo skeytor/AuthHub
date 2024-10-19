@@ -24,7 +24,6 @@ public class AuthController(
             : HandleFailure(result);
     }
 
-    [Authorize]
     [HttpPost("logout")]
     public Task<IActionResult> Logout()
     {

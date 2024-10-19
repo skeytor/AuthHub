@@ -1,6 +1,7 @@
 ﻿using AuthHub.Domain.Entities;
 using AuthHub.Persistence;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage;
 
@@ -24,18 +25,21 @@ public static class SampleDataInitializer
             typeof(User).FullName,
             typeof(Role).FullName,
             typeof(Permission).FullName,
+            typeof(RolePermission).FullName,
         ];
         foreach (var entityName in entities)
         {
-            IEntityType? entity = context.Model.FindEntityType(entityName!);
-            var tableName = entity?.GetTableName();
-            var schemaName = entity?.GetSchema();
+            IEntityType? entityMetaData = context.Model.FindEntityType(entityName!);
+            var tableName = entityMetaData?.GetTableName();
+            var schemaName = entityMetaData?.GetSchema();
 
             context.Database.ExecuteSqlRaw($"DELETE FROM {schemaName}.{tableName}");
 
-            bool isGuidKey = CheckGuidKey(entity!);
+            bool isGuidKey = HasGuidIdentityColumn(entityMetaData!);
 
-            if (!isGuidKey)
+            bool isCompositeKey = entityMetaData?.FindPrimaryKey()!.Properties.Count > 1;
+
+            if (!isGuidKey && !isCompositeKey)
             {
                 context.Database.ExecuteSqlRaw($"DBCC CHECKIDENT (\"{schemaName}.{tableName}\", RESEED, 1);");
             }
@@ -50,6 +54,7 @@ public static class SampleDataInitializer
     {
         ProcessInsert(context, context.Permissions, SampleData.Permissions);
         ProcessInsert(context, context.Roles, SampleData.Roles);
+        ProcessInsert(context, context.RolePermissions, SampleData.RolePermissions);
         ProcessInsert(context, context.Users, SampleData.Users);
 
         /// <summary>
@@ -73,8 +78,9 @@ public static class SampleDataInitializer
             {
                 using IDbContextTransaction transaccion = context.Database.BeginTransaction();
                 IEntityType? metaData = context.Model.FindEntityType(typeof(TEntity).FullName!);
-                bool isGuidKey = CheckGuidKey(metaData!);
-                if (!isGuidKey)
+                bool hasGuidIdentityColumn = HasGuidIdentityColumn(metaData!);
+                bool isCompositeKey = metaData?.FindPrimaryKey()!.Properties.Count > 1;
+                if (!hasGuidIdentityColumn && !isCompositeKey)
                 {
                     context.Database.ExecuteSqlRaw(
                         $"SET IDENTITY_INSERT {metaData?.GetSchema()}.{metaData?.GetTableName()} ON");
@@ -82,7 +88,7 @@ public static class SampleDataInitializer
                 table.AddRange(records);
                 context.SaveChanges();
 
-                if (!isGuidKey)
+                if (!hasGuidIdentityColumn && !isCompositeKey)
                 {
                     context.Database.ExecuteSqlRaw(
                         $"SET IDENTITY_INSERT {metaData?.GetSchema()}.{metaData?.GetTableName()} OFF");
@@ -91,11 +97,11 @@ public static class SampleDataInitializer
             });
         }
     }
-    private static bool CheckGuidKey(IEntityType metadata)
-    {
-        IProperty property = metadata.FindPrimaryKey()!.Properties[0];
-        return property.ClrType == typeof(Guid);
-    }
+    private static bool HasGuidIdentityColumn(IEntityType entity) 
+        => entity.FindPrimaryKey()!.Properties[0].ClrType == typeof(Guid);
+
+    private static bool HasIdentityColumn(IEntityType entity) =>
+        entity?.FindPrimaryKey()!.Properties.Any(p => p.ValueGenerated == ValueGenerated.OnAdd) ?? false;
 
     /// <summary>
     /// Clears all data and reseeds the database with initial sample data.

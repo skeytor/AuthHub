@@ -1,6 +1,6 @@
 ﻿using AuthHub.Api.Dtos;
 using AuthHub.Api.Services.Roles;
-using Microsoft.AspNetCore.Authorization;
+using AuthHub.Infrastructure.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AuthHub.Api.Controllers;
@@ -10,9 +10,10 @@ namespace AuthHub.Api.Controllers;
 /// </summary>
 /// <param name="roleService">The service responsible for handling business logic related to roles</param>
 [Route("api/[controller]")]
-[Authorize(Policy = "Admin")]
+//[CustomAuthorize(Permissions.CanViewUsers | Permissions.CanManageRoles)]
 public class RoleController(IRoleService roleService) : ApiBaseController
 {
+    [CustomAuthorize(Permissions.CanViewUsers)]
     [HttpGet, ProducesResponseType<List<RoleResponse>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll()
     {
@@ -22,6 +23,7 @@ public class RoleController(IRoleService roleService) : ApiBaseController
             : HandleFailure(result);
     }
 
+    [CustomAuthorize(Permissions.CanManageUsers)]
     [HttpPost, ProducesResponseType<string>(StatusCodes.Status201Created)]
     public async Task<IActionResult> Create([FromBody] CreateRoleRequest request)
     {

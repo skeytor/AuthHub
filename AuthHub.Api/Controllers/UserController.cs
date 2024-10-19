@@ -12,9 +12,11 @@ namespace AuthHub.Api.Controllers;
 /// </summary>
 /// <param name="userService"></param>
 [Route("api/[controller]")]
+[CustomAuthorize(Permissions.CanViewUsers & Permissions.CanManageUsers)]
 public sealed class UserController(
     IUserService userService) : ApiBaseController
 {
+    [AllowAnonymous]
     [HttpGet("me"), ProducesResponseType<UserResponse>(StatusCodes.Status200OK)]
     public async Task<IActionResult> Me()
     {

@@ -1,6 +1,5 @@
 ﻿using AuthHub.Domain.Repositories;
 using Microsoft.AspNetCore.Authentication;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
 namespace AuthHub.Infrastructure.Authorization;
@@ -27,7 +26,8 @@ public class CustomClaimsTransformation(IUserRepository userRepository) : IClaim
         {
             userPermissions |= Enum.Parse<Permissions>(permission);
         }
-        claimsIdentity.AddClaim(new Claim(CustomClaimTypes.Permissions, userPermissions.ToString()));
+        int permissionsValue = (int)userPermissions;
+        claimsIdentity.AddClaim(new Claim(CustomClaimTypes.Permissions, permissionsValue.ToString()));
         principal.AddIdentity(claimsIdentity);
         return principal;
     }

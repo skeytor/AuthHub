@@ -9,4 +9,5 @@ public enum Permissions
     CanViewUsers = 4,
     CanManageUsers = 8,
     Forecast = 16,
+    All = int.MaxValue,
 }
