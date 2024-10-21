@@ -23,7 +23,8 @@ public sealed class RoleRepository(IAppDbContext context)
 
     public async Task<Role?> GetByIdAsync(int id) => await _Context
             .Roles
-            .FindAsync(id);
+            .Include(x => x.Permissions)
+            .FirstOrDefaultAsync(x => x.Id == id);
 
     public async Task<IReadOnlySet<string>> GetPermissionsByUserIdAsync(Guid userId)
     {
@@ -43,4 +44,6 @@ public sealed class RoleRepository(IAppDbContext context)
     public async Task<bool> RoleExistsAsync(string roleName) => await _Context
             .Roles
             .AnyAsync(x => x.Name == roleName);
+
+    public Task UpdateAsync(Role role) => Task.FromResult(_Context.Roles.Update(role));
 }

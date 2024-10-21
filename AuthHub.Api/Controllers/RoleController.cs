@@ -30,4 +30,13 @@ public class RoleController(IRoleService roleService) : ApiBaseController
             ? CreatedAtAction(nameof(GetAll), result.Value)
             : HandleFailure(result);
     }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update([FromRoute] int id, [FromBody] CreateRoleRequest request)
+    {
+        var result = await roleService.UpdateAsync(id, request);
+        return result.IsSuccess
+            ? Ok(result.Value)
+            : HandleFailure(result);
+    }
 }

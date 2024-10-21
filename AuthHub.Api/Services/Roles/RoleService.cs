@@ -49,4 +49,22 @@ public sealed class RoleService(
                 x.Permissions.Select(p => p.Name).ToHashSet()))
             .ToList();
     }
+
+    public async Task<Result<string>> UpdateAsync(int id, CreateRoleRequest request)
+    {
+        Role? role = await roleRepository.GetByIdAsync(id);
+        if (role is null)
+        {
+            return Result.Failure<string>(Error.NotFound("", ""));
+        }
+        List<Permission> permissions = await permissionRepository.GetAllAsync();
+        var rolePermissions = permissions
+            .Where(x => request.Permissions.Contains(x.Id))
+            .ToList();
+        role.Name = request.Name;
+        role.Description = request.Description;
+        role.Permissions = rolePermissions;
+        await Task.WhenAll(roleRepository.UpdateAsync(role), unitOfWork.SaveChangesAsync());
+        return request.Name;
+    }
 }
