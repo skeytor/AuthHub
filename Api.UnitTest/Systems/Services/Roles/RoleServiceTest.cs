@@ -127,4 +127,42 @@ public class RoleServiceTest
         result.Value.Should().NotBeNullOrEmpty();
         result.Value.Should().HaveSameCount(roles);
     }
+
+    [Theory]
+    [ClassData(typeof(RoleTestData.ValidUpdateRoleTestData))]
+    public async Task Update_Should_ReturnSucess_WhenRoleExists(
+        List<Permission> permissions, Role role, CreateRoleRequest roleToUpdate, int roleId)
+    {
+        // Arrange
+        Mock<IRoleRepository> mockRoleRepository = new();
+        Mock<IPermissionRepository> mockPermissionRepository = new();
+        Mock<IUnitOfWork> mockUnitOfWork = new();
+
+        mockRoleRepository.Setup(repo => repo.GetByIdAsync(It.IsAny<int>()))
+            .ReturnsAsync(role)
+            .Verifiable(Times.Once());
+
+        mockRoleRepository.Setup(repo => repo.UpdateAsync(It.IsAny<Role>()))
+            .Returns(Task.CompletedTask)
+            .Verifiable(Times.Once());
+
+        mockPermissionRepository.Setup(repo => repo.GetAllAsync())
+            .ReturnsAsync(permissions)
+            .Verifiable(Times.Once());
+
+        mockUnitOfWork.Setup(unit => unit.SaveChangesAsync(default))
+            .ReturnsAsync(1)
+            .Verifiable(Times.Once());
+
+        RoleService service = new(
+            mockRoleRepository.Object,
+            mockPermissionRepository.Object,
+            mockUnitOfWork.Object);
+
+        // Act
+        var result = await service.UpdateAsync(roleId, roleToUpdate);
+        Mock.VerifyAll(mockRoleRepository, mockPermissionRepository, mockUnitOfWork);
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Should().Be(roleToUpdate.Name);
+    }
 }

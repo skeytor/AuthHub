@@ -68,6 +68,31 @@ public class RoleControllerTest
         IReadOnlyList<RoleResponse> roles = (IReadOnlyList<RoleResponse>)objResult.Value!;
         roles.Should().NotBeNullOrEmpty();
         roles.Should().HaveSameCount(rolesExpected);
+    }
 
+    [Theory]
+    [ClassData(typeof(RoleControllerTestData.ValidUpdateRoleControllerTestData))]
+    public async Task UpdateAsync_Should_ReturnSuccess(
+        int roleId, CreateRoleRequest request, string roleExpected)
+    {
+        // Arrange
+        Mock<IRoleService> mockRoleService = new();
+        mockRoleService
+            .Setup(service => service.UpdateAsync(It.IsAny<int>(), It.IsAny<CreateRoleRequest>()))
+            .ReturnsAsync(roleExpected)
+            .Verifiable(Times.Once());
+        RoleController controller = new(mockRoleService.Object);
+
+        // Act
+        var result = await controller.Update(roleId, request);
+
+        // Assert
+        Mock.VerifyAll(mockRoleService);
+        
+        result.Should().BeOfType<OkObjectResult>();
+        
+        OkObjectResult objectResult = (OkObjectResult)result;
+        objectResult.Value.Should().BeOfType<string>();
+        
     }
 }
