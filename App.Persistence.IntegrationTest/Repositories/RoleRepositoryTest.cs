@@ -14,7 +14,7 @@ public class RoleRepositoryTest(
         ExecuteInATransaction(RunTest);
         void RunTest()
         {
-            List<Permission> permissions1 =
+            List<Permission> permissions =
             [
                 new Permission
                 {
@@ -25,18 +25,15 @@ public class RoleRepositoryTest(
                     Name = "CanViewUser"
                 }
             ];
-            Context.Permissions.AddRange(permissions1 );
-            Context.SaveChanges();
-            List<Permission> permissions2 = permissions1.Select(x => new Permission { Id = x.Id} ).ToList();
+            Context.Permissions.AddRange(permissions);
             Role role = new()
             {
                 Name = "Admin",
                 Description = "This is a admin user",
-                Permissions = permissions2
+                Permissions = permissions
             };
             Context.Roles.Add(role);
             Context.SaveChanges();
-            var s = Context.RolePermissions.ToList();
             Assert.Equal(1, role.Id);
         }
     }

@@ -14,7 +14,8 @@ internal class TestAuthHandler(
     IOptionsMonitor<AuthenticationSchemeOptions> options,
     IServiceScopeFactory serviceScopeFactory,
     ILoggerFactory logger, 
-    UrlEncoder encoder) : AuthenticationHandler<AuthenticationSchemeOptions>(options, logger, encoder)
+    UrlEncoder encoder) 
+    : AuthenticationHandler<AuthenticationSchemeOptions>(options, logger, encoder)
 {
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
@@ -25,9 +26,9 @@ internal class TestAuthHandler(
             .AsNoTracking()
             .Include(x => x.Role)
             .ThenInclude(x => x.Permissions)
-            .FirstOrDefault(x => x.Username == "accounter_1"); // See SampleUser class
+            .FirstOrDefault(x => x.Username == "admin_1"); // See SampleUser class
 
-        List<Claim> claims =
+        Claim[] claims =
         [
             new(ClaimTypes.NameIdentifier, user!.Id.ToString()),
             new(ClaimTypes.Role, user.Role.Name)

@@ -41,7 +41,7 @@ public sealed class UserRepository(IAppDbContext context)
 
     public void Update(User user) => _Context.Users.Update(user);
 
-    public async Task<HashSet<string>> GetPermissions(Guid userId)
+    public async Task<HashSet<string>> GetPermissionByUserIdAsync(Guid userId)
     {
         string[] permission = await _Context
             .Users

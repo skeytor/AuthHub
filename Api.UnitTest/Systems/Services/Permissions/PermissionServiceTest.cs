@@ -1,22 +1,42 @@
-﻿using AuthHub.Domain.Entities;
+﻿using AuthHub.Api.Services.Permissions;
+using AuthHub.Domain.Entities;
+using AuthHub.Domain.Repositories;
 using AuthHub.Infrastructure.Authorization;
 using FluentAssertions;
+using Moq;
 
 namespace Api.UnitTest.Systems.Services.Permissiones;
 
 public class PermissionServiceTest
 {
     [Fact]
-    public void Get_Permissions()
+    public async void GetAllAsync_Should_ReturnAllPermissions()
     {
-        var permissions = Enum.GetValues<Permissions>()
+        // Arrange
+        List<Permission> sampleData = Enum.GetValues<Permissions>()
             .Where(x => x != Permissions.None && x != Permissions.All)
-            .Select((x, i) => new Permission
+            .Select(x => new Permission
             {
-                Id = i,
+                Id = (int)x,
                 Name = x.ToString()
-            });
-        permissions.First().Should().NotBe("None");
-        permissions.Last().Should().NotBe("All");
+            })
+            .ToList();
+
+        Mock<IPermissionRepository> mockPermissionRepository = new();
+        mockPermissionRepository
+            .Setup(repo => repo.GetAllAsync())
+            .ReturnsAsync(sampleData)
+            .Verifiable(Times.Once());
+
+        PermissionService service = new(mockPermissionRepository.Object);
+
+        // Act
+        var result = await service.GetAllAsync();
+
+        // Assert
+        mockPermissionRepository.Verify();
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Should().BeAssignableTo<IReadOnlyList<Permission>>();
+        result.Value.Should().HaveSameCount(sampleData);
     }
 }

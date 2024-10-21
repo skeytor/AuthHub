@@ -53,8 +53,6 @@ public class RoleControllerTest
         mockRoleService
             .Setup(service => service.GetAllAsync())
             .ReturnsAsync(rolesExpected);
-
-
         RoleController controller = new(mockRoleService.Object);
 
         // Act
@@ -65,7 +63,6 @@ public class RoleControllerTest
         response.Should().BeOfType<OkObjectResult>();
 
         var objResult = (OkObjectResult)response;
-        objResult.StatusCode.Should().Be(StatusCodes.Status200OK);
         objResult.Value.Should().BeAssignableTo<IReadOnlyList<RoleResponse>>();
         
         IReadOnlyList<RoleResponse> roles = (IReadOnlyList<RoleResponse>)objResult.Value!;
