@@ -9,8 +9,8 @@ namespace AuthHub.Api.Services.Roles;
 
 public sealed class RoleService(
     IRoleRepository roleRepository,
-    IUnitOfWork unitOfWork,
-    IPermissionRepository? permissionRepository = null) : IRoleService
+    IPermissionRepository permissionRepository,
+    IUnitOfWork unitOfWork) : IRoleService
 {
     public async Task<Result<string>> CreateAsync(CreateRoleRequest request)
     {
@@ -18,11 +18,16 @@ public sealed class RoleService(
         {
             return Result.Failure<string>(RoleError.NotFoundByName(request.Name));
         }
-        List<Permission> permissions = await permissionRepository!.GetAllAsync();
 
+        List<Permission> permissions = await permissionRepository.GetAllAsync();
         Permission[] rolePermissions = permissions
             .Where(x => request.Permissions.Contains(x.Id))
             .ToArray();
+        
+        if (rolePermissions.Length != request.Permissions.Length)
+        {
+            return Result.Failure<string>(RoleError.IdInvalid);
+        }
         Role role = new()
         {
             Name = request.Name,
