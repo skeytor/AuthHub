@@ -17,6 +17,7 @@ public class RoleServiceTest
         // Arrange
         CreateRoleRequest request = new("Admin", "This is an admin", []);
         Mock<IRoleRepository> mockRoleRepository = new();
+        Mock<IPermissionRepository> mockPermissionRepository = new();
         Mock<IUnitOfWork> mockUnitOfWork = new();
 
         mockRoleRepository
@@ -27,12 +28,18 @@ public class RoleServiceTest
             .Setup(repo => repo.RoleExistsAsync(It.IsAny<string>()))
             .ReturnsAsync(false)
             .Verifiable(Times.Once());
+        mockPermissionRepository.Setup(repo => repo.GetAllAsync())
+            .ReturnsAsync([new() { Id = 1, Name = "PermissionTest" }])
+            .Verifiable(Times.Once());
         mockUnitOfWork
             .Setup(unit => unit.SaveChangesAsync(default))
             .ReturnsAsync(1)
             .Verifiable(Times.Once());
 
-        RoleService service = new(mockRoleRepository.Object, mockUnitOfWork.Object);
+        RoleService service = new(
+            mockRoleRepository.Object,
+            mockPermissionRepository.Object,
+            mockUnitOfWork.Object);
 
         // Act
         var result = await service.CreateAsync(request);
@@ -68,7 +75,7 @@ public class RoleServiceTest
             .ReturnsAsync(0)
             .Verifiable(Times.Never()); // Should never be called to.
 
-        RoleService service = new(mockRoleRepository.Object, mockUnitOfWork.Object);
+        RoleService service = new(mockRoleRepository.Object, default!, mockUnitOfWork.Object);
 
         // Act
         var result = await service.CreateAsync(request);
@@ -100,12 +107,15 @@ public class RoleServiceTest
             }
         ];
         Mock<IRoleRepository> mockRoleRepository = new();
+        Mock<IPermissionRepository> mockPermissionRepository = new();
         mockRoleRepository
             .Setup(repo => repo.GetAllAsync())
             .ReturnsAsync(roles)
             .Verifiable(Times.Once());
-
-        RoleService service = new(mockRoleRepository.Object, default!);
+        mockPermissionRepository.Setup(repo => repo.GetAllAsync())
+            .ReturnsAsync([new() { Id = 1, Name = "PermissionTest" }])
+            .Verifiable(Times.Once());
+        RoleService service = new(mockRoleRepository.Object, mockPermissionRepository.Object, default!);
 
         // Act
         var result = await service.GetAllAsync();
@@ -116,5 +126,43 @@ public class RoleServiceTest
         result.Value.Should().BeAssignableTo<IReadOnlyList<RoleResponse>>();
         result.Value.Should().NotBeNullOrEmpty();
         result.Value.Should().HaveSameCount(roles);
+    }
+
+    [Theory]
+    [ClassData(typeof(RoleTestData.ValidUpdateRoleTestData))]
+    public async Task Update_Should_ReturnSucess_WhenRoleExists(
+        List<Permission> permissions, Role role, CreateRoleRequest roleToUpdate, int roleId)
+    {
+        // Arrange
+        Mock<IRoleRepository> mockRoleRepository = new();
+        Mock<IPermissionRepository> mockPermissionRepository = new();
+        Mock<IUnitOfWork> mockUnitOfWork = new();
+
+        mockRoleRepository.Setup(repo => repo.GetByIdAsync(It.IsAny<int>()))
+            .ReturnsAsync(role)
+            .Verifiable(Times.Once());
+
+        mockRoleRepository.Setup(repo => repo.UpdateAsync(It.IsAny<Role>()))
+            .Returns(Task.CompletedTask)
+            .Verifiable(Times.Once());
+
+        mockPermissionRepository.Setup(repo => repo.GetAllAsync())
+            .ReturnsAsync(permissions)
+            .Verifiable(Times.Once());
+
+        mockUnitOfWork.Setup(unit => unit.SaveChangesAsync(default))
+            .ReturnsAsync(1)
+            .Verifiable(Times.Once());
+
+        RoleService service = new(
+            mockRoleRepository.Object,
+            mockPermissionRepository.Object,
+            mockUnitOfWork.Object);
+
+        // Act
+        var result = await service.UpdateAsync(roleId, roleToUpdate);
+        Mock.VerifyAll(mockRoleRepository, mockPermissionRepository, mockUnitOfWork);
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Should().Be(roleToUpdate.Name);
     }
 }

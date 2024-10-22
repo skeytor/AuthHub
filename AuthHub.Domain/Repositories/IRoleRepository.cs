@@ -9,5 +9,6 @@ namespace AuthHub.Domain.Repositories
         Task<Role?> GetByIdAsync(int id);
         Task<IReadOnlySet<string>> GetPermissionsByUserIdAsync(Guid userId);
         Task<bool> RoleExistsAsync(string roleName);
+        Task UpdateAsync(Role role);
     }
 }

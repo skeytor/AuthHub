@@ -1,7 +1,10 @@
 ﻿using AuthHub.Api.Dtos;
 using AuthHub.Api.IntegrationTest.Fixtures;
+using AuthHub.Persistence;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using System.Net.Http.Json;
 using Xunit.Abstractions;
 
@@ -30,14 +33,15 @@ public class RoleControllerTest(
         data.Should().Contain(x => x.Name == "Admin");
     }
 
-    [Fact]
-    public async Task CreateRole_Should_ReturnRoleName_WhenRoleDoesNotExist()
+    [Theory]
+    [InlineData("/api/role")]
+    public async Task CreateRole_Should_ReturnRoleName_WhenRoleDoesNotExist(string pathURL)
     {
         // Arrange
         CreateRoleRequest request = new("Role Test", "This is an administrator", Permissions: [1, 2, 3]);
 
         // Act
-        HttpResponseMessage response = await _httpClient.PostAsJsonAsync("/api/role", request);
+        HttpResponseMessage response = await _httpClient.PostAsJsonAsync(pathURL, request);
 
         // Assert
         string message = await response.Content.ReadAsStringAsync();
@@ -50,14 +54,15 @@ public class RoleControllerTest(
         data.Should().Be(request.Name);
     }
 
-    [Fact]
-    public async Task CreateRole_Should_ReturnFailure_WhenRoleExists()
+    [Theory]
+    [InlineData("/api/role")]
+    public async Task CreateRole_Should_ReturnFailure_WhenRoleExists(string pathURL)
     {
         // Arrange
         CreateRoleRequest request = new("Admin", "This is a description test", []); // See SampleData.Roles
 
         // Act
-        HttpResponseMessage response = await _httpClient.PostAsJsonAsync("/api/role", request);
+        HttpResponseMessage response = await _httpClient.PostAsJsonAsync(pathURL, request);
 
         // Assert
         string message = await response.Content.ReadAsStringAsync();
@@ -65,6 +70,35 @@ public class RoleControllerTest(
 
         response.StatusCode.Should().Be(System.Net.HttpStatusCode.NotFound);
         var problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+    }
 
+    [Theory]
+    [InlineData("/api/role")]
+    public async Task UpdateRole_Should_ReturnNoContentStatusCode(string pathURL)
+    {
+        // Arrange
+        CreateRoleRequest request = new("AdminChanged", "This role was changed", [1, 2]);
+        int roleId = 1;
+
+        // Act
+        HttpResponseMessage response = await _httpClient.PutAsJsonAsync($"{pathURL}/{roleId}", request);
+
+        // Assert
+        string message = await response.Content.ReadAsStringAsync();
+        _testOutputHelper.WriteLine($"Message: {message}");
+
+        response.EnsureSuccessStatusCode();
+        response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
+        string responseData = await response.Content.ReadAsStringAsync();
+        responseData.Should().Be(request.Name);
+
+        using IServiceScope scope = _factory.Services.CreateScope();
+        AppDbContext context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        
+        var roleUpdated = context.Roles
+            .Include(x => x.Permissions)
+            .FirstOrDefault(x => x.Id == roleId);
+        roleUpdated!.Permissions.Should().HaveSameCount(request.Permissions);
+        roleUpdated!.Permissions.Should().Contain(x => request.Permissions.Contains(x.Id));
     }
 }

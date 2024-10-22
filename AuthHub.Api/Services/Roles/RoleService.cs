@@ -9,8 +9,8 @@ namespace AuthHub.Api.Services.Roles;
 
 public sealed class RoleService(
     IRoleRepository roleRepository,
-    IUnitOfWork unitOfWork,
-    IPermissionRepository? permissionRepository = null) : IRoleService
+    IPermissionRepository permissionRepository,
+    IUnitOfWork unitOfWork) : IRoleService
 {
     public async Task<Result<string>> CreateAsync(CreateRoleRequest request)
     {
@@ -18,11 +18,16 @@ public sealed class RoleService(
         {
             return Result.Failure<string>(RoleError.NotFoundByName(request.Name));
         }
-        List<Permission> permissions = await permissionRepository!.GetAllAsync();
 
+        List<Permission> permissions = await permissionRepository.GetAllAsync();
         Permission[] rolePermissions = permissions
             .Where(x => request.Permissions.Contains(x.Id))
             .ToArray();
+        
+        if (rolePermissions.Length != request.Permissions.Length)
+        {
+            return Result.Failure<string>(RoleError.IdInvalid);
+        }
         Role role = new()
         {
             Name = request.Name,
@@ -43,5 +48,23 @@ public sealed class RoleService(
                 x.Description,
                 x.Permissions.Select(p => p.Name).ToHashSet()))
             .ToList();
+    }
+
+    public async Task<Result<string>> UpdateAsync(int id, CreateRoleRequest request)
+    {
+        Role? role = await roleRepository.GetByIdAsync(id);
+        if (role is null)
+        {
+            return Result.Failure<string>(Error.NotFound("", ""));
+        }
+        List<Permission> permissions = await permissionRepository.GetAllAsync();
+        var rolePermissions = permissions
+            .Where(x => request.Permissions.Contains(x.Id))
+            .ToList();
+        role.Name = request.Name;
+        role.Description = request.Description;
+        role.Permissions = rolePermissions;
+        await Task.WhenAll(roleRepository.UpdateAsync(role), unitOfWork.SaveChangesAsync());
+        return request.Name;
     }
 }

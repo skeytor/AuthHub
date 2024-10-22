@@ -67,7 +67,7 @@ public interface IUserRepository
     /// A task that represents the asynchronouns operation. The task result contains a <see cref="HashSet{string}"/>
     /// of permissions.
     /// </returns>
-    Task<HashSet<string>> GetPermissions(Guid userId);
+    Task<HashSet<string>> GetPermissionByUserIdAsync(Guid userId);
     /// <summary>
     /// Updates an existing user in the data store.
     /// </summary>

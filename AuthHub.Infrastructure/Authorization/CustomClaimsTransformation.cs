@@ -20,8 +20,8 @@ public class CustomClaimsTransformation(IUserRepository userRepository) : IClaim
         {
             return principal;
         }
-        HashSet<string> permissions = await userRepository.GetPermissions(userId);
-        var userPermissions = Permissions.None;
+        HashSet<string> permissions = await userRepository.GetPermissionByUserIdAsync(userId);
+        Permissions userPermissions = Permissions.None;
         foreach (var permission in permissions)
         {
             userPermissions |= Enum.Parse<Permissions>(permission);
