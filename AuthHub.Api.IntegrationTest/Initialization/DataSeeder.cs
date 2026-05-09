@@ -11,7 +11,7 @@ namespace AuthHub.Api.IntegrationTest.Initialization;
 /// Provides methods for clearing and seeding data in the database
 /// Used for setting up and resetting the database for integration tests or initial data setup
 /// </summary>
-public static class SampleDataInitializer
+public static class DataSeeder
 {
     /// <summary>
     /// Clears all data from the specified tables in the database.

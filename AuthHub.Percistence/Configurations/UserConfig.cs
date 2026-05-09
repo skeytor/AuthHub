@@ -37,5 +37,7 @@ internal sealed class UserConfig : IEntityTypeConfiguration<User>
             .IsUnique();
         builder.HasIndex(x => x.Email)
             .IsUnique();
+
+        builder.HasQueryFilter(x => x.IsActive);
     }
 }

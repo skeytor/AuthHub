@@ -38,12 +38,12 @@ public abstract class BaseWebApplicationTest
     /// This method is called during class initialization to ensure a fresh 
     /// database state with known test data. It creates a new service scope, 
     /// retrieves the <see cref="AppDbContext"/>, and invokes the 
-    /// <see cref="SampleDataInitializer"/> to clear and reseed the database.
+    /// <see cref="DataSeeder"/> to clear and reseed the database.
     /// </remarks>
     private void DataInitializer()
     {
         using IServiceScope scope = _factory.Services.CreateScope();
         AppDbContext context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-        SampleDataInitializer.ClearAndReseedDatabase(context);
+        DataSeeder.ClearAndReseedDatabase(context);
     }
 }

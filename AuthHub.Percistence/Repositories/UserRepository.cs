@@ -18,6 +18,7 @@ public sealed class UserRepository(IAppDbContext context)
 
     public async Task<IReadOnlyList<User>> GetAllAsync() => await _Context
             .Users
+            .IgnoreQueryFilters()
             .AsNoTracking()
             .ToListAsync();
 
@@ -33,17 +34,19 @@ public sealed class UserRepository(IAppDbContext context)
 
     public async Task<bool> EmailExistsAsync(string email) => await _Context
             .Users
+            .IgnoreQueryFilters()
             .AnyAsync(u => u.Email == email);
 
     public async Task<bool> UserNameExistsAsync(string userName) => await _Context
             .Users
+            .IgnoreQueryFilters()
             .AnyAsync(u => u.Username == userName);
 
     public void Update(User user) => _Context.Users.Update(user);
 
     public async Task<HashSet<string>> GetPermissionByUserIdAsync(Guid userId)
     {
-        string[] permission = await _Context
+        string[] permissions = await _Context
             .Users
             .AsNoTracking()
             .Include(x => x.Role)
@@ -53,6 +56,6 @@ public sealed class UserRepository(IAppDbContext context)
             .SelectMany(x => x.Permissions)
             .Select(x => x.Name)
             .ToArrayAsync();
-        return [.. permission];
+        return [.. permissions];
     }
 }

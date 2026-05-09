@@ -38,5 +38,5 @@ public class IntegrationTestWebApplicationFactory<TProgram>
     }
     public Task InitializeAsync() => _msSqlContainer.StartAsync();
 
-    public new Task DisposeAsync() => _msSqlContainer.DisposeAsync().AsTask();
+    public new Task DisposeAsync() => _msSqlContainer.StopAsync();
 }

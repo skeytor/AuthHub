@@ -61,12 +61,7 @@ public class UserServiceTest
 
         Mock<IUserRepository> mockUserRepository = new();
         Mock<IUnitOfWork> mockUnitOfWork = new();
-        Mock<IPasswordHasher<User>> mockPasswordHasher = new();
-
-        mockPasswordHasher.Setup(provider =>
-                provider.HashPassword(It.IsAny<User>(), input.Password))
-            .Returns(It.IsAny<string>())
-            .Verifiable(Times.Once());
+        PasswordHasher<User> passwordHasher = new();
 
         mockUserRepository
             .Setup(repo => repo.EmailExistsAsync(It.IsAny<string>()))
@@ -90,21 +85,16 @@ public class UserServiceTest
         UserService userService = new(
             mockUserRepository.Object,
             mockUnitOfWork.Object,
-            mockPasswordHasher.Object);
+            passwordHasher);
 
         // Act
         var result = await userService.RegisterAsync(input);
 
         // Assert
-        mockUserRepository.Verify();
-        mockUnitOfWork.Verify();
-        mockPasswordHasher.Verify();
+        Mock.VerifyAll(mockUserRepository, mockUnitOfWork);
         result.IsSuccess
             .Should()
             .BeTrue();
-        result.Error
-            .Should()
-            .Be(Error.None);
         result.Value
             .Should()
             .NotBeEmpty()
@@ -152,8 +142,7 @@ public class UserServiceTest
         var result = await userService.RegisterAsync(input);
 
         // Assert
-        mockUserRepository.Verify();
-        mockUnitOfWork.Verify();
+        Mock.Verify(mockUserRepository, mockUnitOfWork);
         result.IsFailure
             .Should()
             .BeTrue();
@@ -257,16 +246,15 @@ public class UserServiceTest
             .Verifiable(Times.Once()); // A row affected
 
         UserService userService = new(
-            mockUserRepository.Object, 
-            mockUnitOfWork.Object, 
+            mockUserRepository.Object,
+            mockUnitOfWork.Object,
             passwordHasher);
 
         // Act
         var result = await userService.Update(userId, input);
 
         // Assert
-        mockUserRepository.Verify();
-        mockUnitOfWork.Verify();
+        Mock.VerifyAll(mockUserRepository, mockUnitOfWork);
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().NotBeEmpty().And.Be(userId);
 

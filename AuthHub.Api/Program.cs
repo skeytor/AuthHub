@@ -20,7 +20,7 @@ builder.Services.AddAppServices();
 // Add a custom authorization and authentication configuration to the container.
 builder.Services.AddAuthenticationAndAuthorization();
 
-// Add the problem deatils services.
+// Add the problem details services.
 builder.Services.AddProblemDetails();
 
 var app = builder.Build();
