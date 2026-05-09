@@ -12,7 +12,7 @@ internal class ConfigureSwaggerGenOptions : IConfigureNamedOptions<SwaggerGenOpt
     public void Configure(SwaggerGenOptions options)
     {
         ConfigureDocInformation(options);
-        ConfigureDocAuthentication(options);
+        ConfigureDocSecurity(options);
     }
     private static void ConfigureDocInformation(SwaggerGenOptions options)
     {
@@ -34,7 +34,7 @@ internal class ConfigureSwaggerGenOptions : IConfigureNamedOptions<SwaggerGenOpt
             }
         });
     }
-    private static void ConfigureDocAuthentication(SwaggerGenOptions options)
+    private static void ConfigureDocSecurity(SwaggerGenOptions options)
     {
         options.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
         {

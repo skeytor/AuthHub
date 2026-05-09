@@ -10,7 +10,7 @@ namespace AuthHub.Api.Controllers;
 /// </summary>
 /// <param name="roleService">The service responsible for handling business logic related to roles</param>
 [Route("api/[controller]")]
-[CustomAuthorize(Permissions.CanViewRoles | Permissions.CanManageRoles)]
+//[CustomAuthorize(Permissions.CanViewRoles | Permissions.CanManageRoles)]
 public class RoleController(IRoleService roleService) : ApiBaseController
 {
     [HttpGet, ProducesResponseType<List<RoleResponse>>(StatusCodes.Status200OK)]

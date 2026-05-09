@@ -1,4 +1,5 @@
 ﻿using AuthHub.Api.Dtos;
+using AuthHub.Api.Mappers.Dtos;
 using AuthHub.Domain.Entities;
 using AuthHub.Domain.Errors;
 using AuthHub.Domain.Repositories;
@@ -29,15 +30,7 @@ public sealed class UserService(
         {
             return Result.Failure<Guid>(UserError.UserNameAlready(request.UserName));
         }
-        User user = new()
-        {
-            FirstName = request.FirstName,
-            LastName = request.LastName,
-            Username = request.UserName,
-            Email = request.Email,
-            IsActive = true,
-            RoleId = request.RoleId,
-        };
+        User user = request.MapToUserEntity();
         user.Password = passwordHasher.HashPassword(user, request.Password);
         var userCreated = await userRepository.InsertAsync(user);
         await unitOfWork.SaveChangesAsync();
@@ -69,7 +62,7 @@ public sealed class UserService(
         {
             return Result.Failure<Guid>(UserError.NotFound(id));
         }
-        if (await userRepository.EmailExistsAsync(request.Email)) 
+        if (await userRepository.EmailExistsAsync(request.Email))
         {
             return Result.Failure<Guid>(UserError.EmailAlready(request.Email));
         }

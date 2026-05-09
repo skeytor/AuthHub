@@ -21,10 +21,6 @@ public class AuthenticationService(
         {
             return Result.Failure<AccessTokenResponse>(AuthenticationError.InvalidCredentials);
         }
-        if (!user.IsActive)
-        {
-            return Result.Failure<AccessTokenResponse>(AuthenticationError.InvalidCredentials);
-        }
         PasswordVerificationResult passwordVerification = passwordHasher
             .VerifyHashedPassword(user, user.Password, request.Password);
         

@@ -15,7 +15,7 @@ public class CustomClaimsTransformation(IUserRepository userRepository) : IClaim
         }
 
         string? identityId = principal.FindFirstValue(ClaimTypes.NameIdentifier);
-        
+
         if (!Guid.TryParse(identityId, out var userId))
         {
             return principal;
@@ -24,7 +24,10 @@ public class CustomClaimsTransformation(IUserRepository userRepository) : IClaim
         Permissions userPermissions = Permissions.None;
         foreach (var permission in permissions)
         {
-            userPermissions |= Enum.Parse<Permissions>(permission);
+            if (Enum.TryParse(permission, true, out Permissions parsedPermission))
+            {
+                userPermissions |= parsedPermission;
+            }
         }
         int permissionsValue = (int)userPermissions;
         claimsIdentity.AddClaim(new Claim(CustomClaimTypes.Permissions, permissionsValue.ToString()));
